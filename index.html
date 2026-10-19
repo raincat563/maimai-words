@@ -1,0 +1,604 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#f5f3ea">
+  <meta name="description" content="每天一小轮，给中文、写英文，慢慢把单词记牢。">
+  <title>麦麦单词小花园</title>
+  <style>
+:root{--bg:#f5f3ea;--paper:#fffef9;--ink:#293b38;--muted:#6c7b72;--line:#dfe4d9;--green:#38654f;--light:#e8efdf;--orange:#bd6e36;--orange-light:#faecdc;--radius:24px;font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;color:var(--ink);background:var(--bg);font-synthesis:none}
+*{box-sizing:border-box}body{margin:0}button,input,select{font:inherit}button,a,input,select{touch-action:manipulation}button,a{ -webkit-tap-highlight-color:transparent}button{cursor:pointer;border:0}button:disabled{opacity:.45;cursor:default}button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid #8d9eeb;outline-offset:3px}a{color:inherit;text-decoration:none}.shell{max-width:1000px;margin:auto;padding:30px 32px 0}.topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:36px;gap:12px}.brand{display:flex;align-items:center;gap:11px;font-weight:750;font-size:19px;letter-spacing:.03em}.brand small{display:block;color:var(--muted);font-size:9px;letter-spacing:.18em;margin-top:5px;font-weight:500}.brand-icon{background:var(--paper);border:1px solid var(--line);width:48px;height:48px;border-radius:16px;display:grid;place-items:center;font-size:27px}.quiet{background:none;color:var(--muted);padding:12px;font-size:14px}.eyebrow{font-size:12px;letter-spacing:.13em;color:var(--muted);margin:0 0 13px}h1{font-size:34px;line-height:1.35;letter-spacing:-.04em;margin:0 0 15px;font-weight:750}h2{font-size:23px;line-height:1.5;margin:0 0 12px}h3{font-size:18px;margin:0 0 12px}p{line-height:1.75}button{transition:background .15s,transform .15s}button:active{transform:translateY(1px)}.primary,.secondary,.soft,.danger{min-height:50px;padding:13px 22px;border-radius:14px;font-weight:650}.primary{background:var(--green);color:white}.primary:hover{background:#2e5842}.secondary{background:var(--paper);border:1px solid var(--line);color:var(--ink)}.soft{background:var(--light);color:var(--green)}.danger{background:var(--orange-light);color:#945326}.wide{width:100%}.muted{color:var(--muted)}.note{font-size:13px;color:var(--muted);line-height:1.7}.hero{background:var(--paper);border:1px solid var(--line);border-radius:30px;display:grid;grid-template-columns:1fr 220px;padding:36px;gap:20px;position:relative;overflow:hidden}.hero-copy{position:relative;z-index:1}.hero p{margin:0 0 22px}.plant{position:relative;min-height:240px;display:grid;place-items:center}.plant svg{width:210px;max-width:100%;height:auto}.hero-actions{display:flex;flex-wrap:wrap;align-items:center;gap:12px}.tag{display:inline-block;border:1px solid var(--line);border-radius:99px;padding:6px 11px;font-size:12px;color:var(--muted);margin:0 6px 8px 0}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:18px 0 30px}.stat{padding:20px;border-radius:18px;background:#eeefe5}.stat strong{font-size:27px;display:block;margin-bottom:5px;font-weight:650}.stat span{font-size:12px;color:var(--muted)}.section-title{display:flex;align-items:center;justify-content:space-between;gap:15px;margin:22px 0 12px}.section-title h2{font-size:18px;margin:0}.today-note{padding:20px 24px;background:#e7ebdf;border-radius:18px;line-height:1.8;font-size:14px}.mode-switch{display:inline-flex;background:#e7e9df;border-radius:12px;padding:4px;gap:4px;margin:5px 0 18px}.mode-switch button{padding:10px 17px;border-radius:9px;background:none;color:var(--muted);font-size:14px}.mode-switch button.active{background:var(--paper);color:var(--ink);box-shadow:0 2px 4px #293b3809}.tabs{display:flex;gap:8px;justify-content:center;margin:34px auto 0;border-top:1px solid var(--line);padding-top:15px}.tabs a{flex:1;max-width:170px;padding:12px;display:flex;gap:8px;align-items:center;justify-content:center;font-size:20px;border-radius:13px;color:var(--muted)}.tabs a span{font-size:14px}.tabs a.active{background:var(--light);color:var(--green);font-weight:650}footer{text-align:center;color:var(--muted);font-size:11px;padding:20px 0 25px}.practice-top{display:flex;justify-content:space-between;gap:15px;align-items:center;margin-bottom:12px;font-size:13px;color:var(--muted)}.progress{height:6px;border-radius:8px;background:#e1e6da;overflow:hidden;margin-bottom:25px}.progress>i{display:block;height:100%;background:#729b6b;transition:width .3s}.practice-card{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);padding:35px 30px;max-width:680px;margin:0 auto;text-align:center;min-height:330px;display:flex;flex-direction:column;justify-content:center;align-items:center}.prompt{font-size:30px;line-height:1.5;font-weight:700;overflow-wrap:anywhere;margin:12px 0 22px}.instruction{font-size:14px;color:var(--muted);margin:0 0 18px}.answer{font-size:35px;font-weight:700;line-height:1.35;color:var(--green);font-family:ui-rounded,"SF Pro Rounded",-apple-system,sans-serif;overflow-wrap:anywhere;margin:6px 0 12px}.answer-panel{border-top:1px dashed var(--line);width:100%;padding-top:22px;margin-top:8px}.answer-panel .note{margin:10px 0}.actions{display:flex;gap:12px;margin:20px auto;max-width:680px}.actions>*{flex:1}.practice-input{border:2px solid var(--line);border-radius:14px;padding:15px 17px;font-size:22px;max-width:100%;width:370px;background:white;color:var(--ink);text-align:center}.practice-input:focus{border-color:#729b6b;outline:none}.status-pill{display:inline-block;font-size:12px;padding:6px 12px;background:var(--light);color:var(--green);border-radius:99px}.status-pill.orange{background:var(--orange-light);color:#945326}.feedback{border-radius:12px;padding:12px;background:var(--light);font-size:14px;margin:12px 0}.feedback.wrong{background:var(--orange-light);color:#945326}.back{background:none;padding:10px 0;color:var(--muted)}.word-tools{display:flex;gap:10px;margin:18px 0;flex-wrap:wrap}.word-tools button{font-size:13px;padding:11px 14px;min-height:44px}.search{width:100%;padding:15px 18px;border:1px solid var(--line);background:var(--paper);border-radius:14px;margin:5px 0 18px;color:var(--ink)}.word-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.word-row{display:flex;justify-content:space-between;gap:10px;padding:18px;border:1px solid var(--line);background:var(--paper);border-radius:16px;align-items:center}.word-row strong{font-size:18px;display:block;overflow-wrap:anywhere}.word-row p{font-size:13px;color:var(--muted);margin:5px 0}.word-row small{font-size:11px;color:#7a8970}.word-row button{background:var(--light);padding:10px 14px;border-radius:10px;color:var(--green);white-space:nowrap;font-size:13px}.empty{text-align:center;padding:45px 24px;background:var(--paper);border:1px solid var(--line);border-radius:var(--radius)}.empty-icon{font-size:45px;margin-bottom:15px}.summary{text-align:center;max-width:680px;margin:auto}.summary .hero{display:block}.score{font-size:58px;color:var(--green);font-weight:700;margin:18px 0 0}.score small{font-size:18px;color:var(--muted);font-weight:400}.summary .actions{margin-top:25px}.summary-words{display:flex;justify-content:center;flex-wrap:wrap;gap:7px;margin:17px 0}.summary-words span{background:var(--orange-light);padding:7px 12px;border-radius:9px;font-size:14px}.storage-warning{border:1px solid #e2c297;background:var(--orange-light);padding:12px 18px;font-size:13px;line-height:1.7;border-radius:12px;margin:0 0 20px}dialog{background:var(--paper);border:1px solid var(--line);border-radius:24px;max-width:480px;width:calc(100% - 32px);padding:30px;color:var(--ink)}dialog::backdrop{background:#172c2666;backdrop-filter:blur(3px)}dialog ol{padding-left:24px;font-size:15px;line-height:1.9}.close{float:right;background:none;font-size:25px;color:var(--muted);margin:-14px -7px 0 0;padding:5px 10px}#toast{position:fixed;bottom:100px;left:50%;transform:translateX(-50%);background:var(--ink);color:white;padding:13px 21px;border-radius:14px;font-size:14px;z-index:10;max-width:90vw;width:max-content;display:none;box-shadow:0 5px 25px #0002}#print-sheet{display:none}.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)}
+@media(max-width:640px){.shell{padding:22px 18px 85px}.topbar{margin-bottom:26px}.brand{font-size:16px}.brand-icon{height:42px;width:42px;border-radius:14px}.brand small{font-size:8px}.quiet{font-size:12px;padding:8px}.hero{padding:27px 24px;display:block;border-radius:24px}.plant{position:absolute;right:-28px;top:10px;min-height:0;opacity:.13;pointer-events:none}.plant svg{width:180px}h1{font-size:30px}.hero p{font-size:14px;max-width:260px}.hero-actions{display:block}.hero-actions button{width:100%}.hero-actions .note{display:block;text-align:center;margin:12px 0 0}.stats{gap:9px;margin:14px 0 24px}.stat{padding:16px 12px;border-radius:15px}.stat strong{font-size:25px}.stat span{font-size:11px}.today-note{padding:18px;font-size:13px}.tabs{position:fixed;left:0;right:0;bottom:0;background:#f5f3eaf5;backdrop-filter:blur(15px);margin:0;padding:8px 18px calc(8px + env(safe-area-inset-bottom));z-index:5;gap:5px}.tabs a{padding:9px 7px;max-width:none;flex-direction:column;gap:4px;font-size:21px}.tabs a span{font-size:11px}footer{padding-bottom:0}.practice-card{padding:27px 20px;min-height:340px}.prompt{font-size:27px}.answer{font-size:30px}.actions{gap:10px}.actions button{font-size:15px;padding-left:12px;padding-right:12px}.word-list{grid-template-columns:1fr}.word-row{padding:16px 18px}.word-tools{gap:8px}.word-tools button{flex:1;white-space:nowrap}.practice-top{font-size:12px}.summary .hero{padding:28px 20px}.mode-switch{display:flex}.mode-switch button{flex:1}.hero-actions .primary{margin-top:5px}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+@media print{body{background:white;color:black}.shell,dialog,#toast{display:none!important}#print-sheet{display:block;font-family:"PingFang SC",sans-serif}#print-sheet h1{font-size:22px}#print-sheet p{font-size:12px}#print-sheet ol{columns:2;column-gap:40px;padding-left:25px}#print-sheet li{font-size:12px;line-height:1.8;break-inside:avoid;padding:5px 0 17px}#print-sheet li span{display:block;border-bottom:1px solid #aaa;margin-top:10px;height:12px}@page{size:A4;margin:18mm}}
+
+</style>
+</head>
+<body>
+  <div class="shell">
+    <header class="topbar"><a class="brand" href="#home" aria-label="回到首页"><span class="brand-icon" aria-hidden="true">🌱</span><span>麦麦的单词小花园<small>A LITTLE EVERY DAY</small></span></a><button class="quiet" id="help-btn" aria-label="查看使用说明">怎么练？</button></header>
+    <main id="app"></main>
+    <nav class="tabs" aria-label="主导航"><a href="#home" data-page="home">☀<span>今天</span></a><a href="#mistakes" data-page="mistakes">↻<span>再练一练</span></a><a href="#words" data-page="words">▤<span>本周词表</span></a></nav>
+    <footer>每天一点点，给记忆留一点时间。</footer>
+  </div>
+  <dialog id="help"><form method="dialog"><button class="close" aria-label="关闭">×</button></form><p class="eyebrow">写过，才知道会不会</p><h2>一张纸，一小轮</h2><ol><li>看中文，先想英文。</li><li>把英文写在纸上，再点“看看答案”。</li><li>逐个字母检查，如实选“写对了”或“还要练”。</li><li>程序会把错词放到后面再问一次，并安排隔天复习。</li></ol><p>键盘练习会自动核对拼写。课堂要手写时，建议以纸上默写为主。</p><p class="note">记录保存在当前浏览器，换设备不会自动同步。可在词表页导出和导入备份。浏览器清理数据后记录也会清除。发音由设备的语音功能提供，部分设备需要联网。</p><button class="primary wide" id="help-close">开始试试</button></dialog>
+  <div id="toast" role="status" aria-live="polite"></div>
+  <section id="print-sheet"></section>
+  <script>
+window.WORDS = [
+  {
+    "id": "1",
+    "en": "keep",
+    "zh": "保持；继续"
+  },
+  {
+    "id": "2",
+    "en": "mind",
+    "zh": "介意；想法"
+  },
+  {
+    "id": "3",
+    "en": "miss",
+    "zh": "想念；错过"
+  },
+  {
+    "id": "4",
+    "en": "Brazil",
+    "zh": "巴西🇧🇷"
+  },
+  {
+    "id": "5",
+    "en": "probably",
+    "zh": "可能"
+  },
+  {
+    "id": "6",
+    "en": "perhaps",
+    "zh": "或许"
+  },
+  {
+    "id": "7",
+    "en": "be away",
+    "zh": "不在；离开"
+  },
+  {
+    "id": "8",
+    "en": "attractive",
+    "zh": "有吸引力的"
+  },
+  {
+    "id": "9",
+    "en": "happen",
+    "zh": "发生；举行"
+  },
+  {
+    "id": "10",
+    "en": "guide",
+    "zh": "指南；向导"
+  },
+  {
+    "id": "11",
+    "en": "band",
+    "zh": "乐队"
+  },
+  {
+    "id": "12",
+    "en": "play",
+    "zh": "话剧;播放"
+  },
+  {
+    "id": "13",
+    "en": "exhibition",
+    "zh": "展览"
+  },
+  {
+    "id": "14",
+    "en": "winning",
+    "zh": "引人入胜的"
+  },
+  {
+    "id": "15",
+    "en": "place",
+    "zh": "名额；地方"
+  },
+  {
+    "id": "16",
+    "en": "national",
+    "zh": "全国的;民族的"
+  },
+  {
+    "id": "17",
+    "en": "final",
+    "zh": "决赛"
+  },
+  {
+    "id": "18",
+    "en": "chance",
+    "zh": "机会；可能性"
+  },
+  {
+    "id": "19",
+    "en": "album",
+    "zh": "专辑"
+  },
+  {
+    "id": "20",
+    "en": "classic",
+    "zh": "经典的"
+  },
+  {
+    "id": "21",
+    "en": "star",
+    "zh": "由…担任主角"
+  },
+  {
+    "id": "22",
+    "en": "show off",
+    "zh": "展示；炫耀"
+  },
+  {
+    "id": "23",
+    "en": "skill",
+    "zh": "技巧；技能"
+  },
+  {
+    "id": "24",
+    "en": "performance",
+    "zh": "表演；表现n."
+  },
+  {
+    "id": "25",
+    "en": "over",
+    "zh": "超过"
+  },
+  {
+    "id": "26",
+    "en": "decide to",
+    "zh": "决定"
+  },
+  {
+    "id": "27",
+    "en": "push",
+    "zh": "推；"
+  },
+  {
+    "id": "28",
+    "en": "alone",
+    "zh": "单独地"
+  },
+  {
+    "id": "29",
+    "en": "juggle",
+    "zh": "玩杂耍"
+  },
+  {
+    "id": "30",
+    "en": "take",
+    "zh": "花费;带;服用"
+  },
+  {
+    "id": "31",
+    "en": "for free",
+    "zh": "免费"
+  },
+  {
+    "id": "32",
+    "en": "future",
+    "zh": "未来"
+  },
+  {
+    "id": "33",
+    "en": "industry",
+    "zh": "行业；产业"
+  },
+  {
+    "id": "34",
+    "en": "promise to",
+    "zh": "承诺/保证"
+  },
+  {
+    "id": "35",
+    "en": "be tired of",
+    "zh": "厌倦；厌烦"
+  },
+  {
+    "id": "36",
+    "en": "wait (for)",
+    "zh": "等(…)"
+  },
+  {
+    "id": "37",
+    "en": "suggest",
+    "zh": "建议;暗示;表明"
+  },
+  {
+    "id": "38",
+    "en": "accept",
+    "zh": "接受"
+  },
+  {
+    "id": "39",
+    "en": "refuse",
+    "zh": "拒绝"
+  },
+  {
+    "id": "40",
+    "en": "theatre",
+    "zh": "剧院；戏剧"
+  },
+  {
+    "id": "41",
+    "en": "each",
+    "zh": "每一"
+  },
+  {
+    "id": "42",
+    "en": "contact",
+    "zh": "联系"
+  },
+  {
+    "id": "43",
+    "en": "practise",
+    "zh": "练习；排练"
+  },
+  {
+    "id": "44",
+    "en": "hear-heard",
+    "zh": "听说"
+  },
+  {
+    "id": "45",
+    "en": "anyway",
+    "zh": "不管怎么说"
+  },
+  {
+    "id": "46",
+    "en": "vary",
+    "zh": "不同v."
+  },
+  {
+    "id": "47",
+    "en": "even",
+    "zh": "甚至"
+  },
+  {
+    "id": "48",
+    "en": "jazz",
+    "zh": "爵士"
+  },
+  {
+    "id": "49",
+    "en": "seat",
+    "zh": "座位"
+  },
+  {
+    "id": "50",
+    "en": "itself",
+    "zh": "它自己；它本身"
+  },
+  {
+    "id": "51",
+    "en": "numbered",
+    "zh": "标了序号的"
+  },
+  {
+    "id": "52",
+    "en": "front",
+    "zh": "前面"
+  },
+  {
+    "id": "53",
+    "en": "by",
+    "zh": "在…前;被;通过"
+  },
+  {
+    "id": "54",
+    "en": "quarter",
+    "zh": "十五分钟"
+  },
+  {
+    "id": "55",
+    "en": "as you know",
+    "zh": "如你所知"
+  },
+  {
+    "id": "56",
+    "en": "sell",
+    "zh": "出售；卖"
+  },
+  {
+    "id": "57",
+    "en": "adult",
+    "zh": "成年人"
+  },
+  {
+    "id": "58",
+    "en": "finally",
+    "zh": "最后；终于"
+  },
+  {
+    "id": "59",
+    "en": "as",
+    "zh": "因为;作为;当…时"
+  },
+  {
+    "id": "60",
+    "en": "ask … to …",
+    "zh": "让…"
+  },
+  {
+    "id": "61",
+    "en": "awesome",
+    "zh": "非常棒的"
+  },
+  {
+    "id": "62",
+    "en": "amazing",
+    "zh": "惊人的"
+  },
+  {
+    "id": "63",
+    "en": "terrible",
+    "zh": "糟糕的"
+  },
+  {
+    "id": "64",
+    "en": "horrible",
+    "zh": "可怕的；糟糕的"
+  },
+  {
+    "id": "65",
+    "en": "digital",
+    "zh": "数字的；数码的"
+  },
+  {
+    "id": "66",
+    "en": "quite",
+    "zh": "很；十分"
+  },
+  {
+    "id": "67",
+    "en": "acting",
+    "zh": "表演；演戏"
+  },
+  {
+    "id": "68",
+    "en": "engine",
+    "zh": "发动机（n.）"
+  },
+  {
+    "id": "69",
+    "en": "(aero)/(air)plane",
+    "zh": "飞机（n.）"
+  },
+  {
+    "id": "70",
+    "en": "coach",
+    "zh": "大巴车;火车车厢"
+  },
+  {
+    "id": "71",
+    "en": "boat",
+    "zh": "船（n.）"
+  },
+  {
+    "id": "72",
+    "en": "cross",
+    "zh": "横过（v.）"
+  },
+  {
+    "id": "73",
+    "en": "crowded",
+    "zh": "拥挤的（adj.）"
+  },
+  {
+    "id": "74",
+    "en": "crossroad",
+    "zh": "十字路口（n.）"
+  },
+  {
+    "id": "75",
+    "en": "helicopter",
+    "zh": "直升飞机（n.）"
+  },
+  {
+    "id": "76",
+    "en": "delay",
+    "zh": "推迟;延期(n.&v.)"
+  },
+  {
+    "id": "77",
+    "en": "lorry",
+    "zh": "卡车（n.）"
+  },
+  {
+    "id": "78",
+    "en": "delayed",
+    "zh": "延误的（adj.）"
+  },
+  {
+    "id": "79",
+    "en": "motorbike",
+    "zh": "摩托车（n.）"
+  },
+  {
+    "id": "80",
+    "en": "drive",
+    "zh": "驾驶（v.）"
+  },
+  {
+    "id": "81",
+    "en": "ship",
+    "zh": "轮船（n.）"
+  },
+  {
+    "id": "82",
+    "en": "driver",
+    "zh": "司机（n.）"
+  },
+  {
+    "id": "83",
+    "en": "taxi",
+    "zh": "出租车（n.）"
+  },
+  {
+    "id": "84",
+    "en": "driving licence",
+    "zh": "驾驶证"
+  },
+  {
+    "id": "85",
+    "en": "train",
+    "zh": "火车（n.）"
+  },
+  {
+    "id": "86",
+    "en": "would rather",
+    "zh": "宁愿;更愿意"
+  }
+];
+
+</script><script>
+(function(root){
+  'use strict';
+  function day(date=new Date()){return [date.getFullYear(),String(date.getMonth()+1).padStart(2,'0'),String(date.getDate()).padStart(2,'0')].join('-');}
+  function addDays(d,n){const date=new Date(d+'T12:00:00');date.setDate(date.getDate()+n);return day(date);}
+  function empty(){return {seen:0,stage:0,lapses:0,due:null,lastDay:null,lastCorrect:null};}
+  function record(previous,correct,today=day()){
+    const p={...empty(),...previous};
+    const stage=correct ? (p.lastDay===today && p.lastCorrect===true ? p.stage : Math.min(4,p.stage+1)) : 0;
+    const intervals=[0,1,2,4,7];
+    return {...p,seen:p.seen+1,stage,lapses:p.lapses+(correct?0:1),due:addDays(today,intervals[stage]),lastDay:today,lastCorrect:correct};
+  }
+  function normalize(s){return String(s).toLowerCase().trim().replace(/[–—−]/g,'-').replace(/\s+/g,' ').replace(/\s*-\s*/g,'-');}
+  function answers(word){
+    if(word.en==='(aero)/(air)plane')return ['aeroplane','airplane','plane'];
+    if(word.en==='hear-heard')return ['hear-heard','hear heard'];
+    if(word.en==='wait (for)')return ['wait','wait for','wait (for)'];
+    if(word.en==='ask … to …')return ['ask to','ask ... to ...','ask … to …','ask somebody to','ask sb to','ask sb. to'];
+    return [word.en];
+  }
+  function matches(word,value){if(word.en==='Brazil')return String(value).trim()==='Brazil';return answers(word).some(s=>normalize(s)===normalize(value));}
+  function isMistake(s){return !!s && s.lapses>0 && s.stage<3;}
+  function shuffle(list,rng=Math.random){const a=[...list];for(let i=a.length-1;i>0;i--){const j=Math.floor(rng()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+  function dailyQueue(words,records,today=day()){
+    const due=words.filter(w=>records[w.id]?.seen && records[w.id].due<=today).sort((a,b)=>records[a.id].due.localeCompare(records[b.id].due));
+    const fresh=words.filter(w=>!records[w.id]?.seen);
+    const selected=due.slice(0,6);
+    selected.push(...fresh.slice(0,12-selected.length));
+    if(selected.length<12)selected.push(...due.slice(6,6+12-selected.length));
+    return shuffle(selected);
+  }
+  root.MaimaiCore={day,addDays,empty,record,normalize,answers,matches,isMistake,shuffle,dailyQueue};
+})(typeof window!=='undefined'?window:globalThis);
+
+</script><script>
+(function(){
+  'use strict';
+  const C=window.MaimaiCore,words=window.WORDS,byId=Object.fromEntries(words.map(w=>[w.id,w]));
+  const $=s=>document.querySelector(s),esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const key='maimai-word-garden-v1',signature=words.map(w=>w.en).join('|');
+  let storageOK=true,state={signature,records:{},days:{},mode:'paper',session:null},revealed=false,typed='',autoCorrect=null,summary=null;
+  function valid(raw){
+    if(!raw||raw.signature!==signature||!raw.records||!raw.days)throw Error('词表或备份格式不匹配');
+    const records={};
+    for(const [id,r]of Object.entries(raw.records)){
+      if(!byId[id]||!r||!Number.isInteger(r.seen)||r.seen<0||!Number.isInteger(r.stage)||r.stage<0||r.stage>4||!Number.isInteger(r.lapses)||r.lapses<0||!/^\d{4}-\d{2}-\d{2}$/.test(r.due)||!/^\d{4}-\d{2}-\d{2}$/.test(r.lastDay)||typeof r.lastCorrect!=='boolean')throw Error('备份中的学习记录无效');
+      records[id]={...r};
+    }
+    const days={};for(const [d,v]of Object.entries(raw.days)){if(!/^\d{4}-\d{2}-\d{2}$/.test(d)||!v||!Array.isArray(v.ids)||!v.ids.every(id=>!!byId[id])||!Number.isFinite(v.attempts)||!Number.isFinite(v.correct))throw Error('备份中的日期记录无效');days[d]=v;}
+    let session=raw.session;
+    if(session && (!Array.isArray(session.queue)||!session.queue.length||!session.queue.every(x=>byId[x.id]&&typeof x.retry==='boolean')||!Number.isInteger(session.index)||session.index<0||session.index>=session.queue.length||!Array.isArray(session.results)||!session.results.every(r=>byId[r.id]&&typeof r.correct==='boolean')||!['paper','keyboard'].includes(session.mode)))session=null;
+    return {signature,records,days,mode:raw.mode==='keyboard'?'keyboard':'paper',session};
+  }
+  try{const saved=localStorage.getItem(key);if(saved)state=valid(JSON.parse(saved));}catch(e){storageOK=false;}
+  function save(){try{localStorage.setItem(key,JSON.stringify(state));storageOK=true;}catch(e){storageOK=false;toast('浏览器未能保存记录，请导出备份。');}}
+  let toastTimer;function toast(msg){$('#toast').textContent=msg;$('#toast').style.display='block';clearTimeout(toastTimer);toastTimer=setTimeout(()=>$('#toast').style.display='none',3500);}
+  function nav(page){location.hash=page;render();}
+  function dateLabel(s){const a=s.split('-');return Number(a[1])+'月'+Number(a[2])+'日';}
+  function progressText(r){if(!r?.seen)return '还没练过';if(r.due<=C.day())return '今天再练一次';return dateLabel(r.due)+'复习'+(r.stage>=3?' · 复习渐稳':'');}
+  function start(list,label){
+    if(!list.length){toast('这一组已经完成，明天再来复习。');return;}
+    if(state.session&&!confirm('有一轮练习还没完成。要用新一轮替换它吗？'))return;
+    state.session={queue:list.map(w=>({id:w.id,retry:false})),index:0,results:[],label,mode:state.mode};
+    summary=null;revealed=false;typed='';autoCorrect=null;save();nav('practice');
+  }
+  function grade(correct){
+    const s=state.session;if(!s||!revealed)return;
+    const item=s.queue[s.index],today=C.day();
+    state.records[item.id]=C.record(state.records[item.id],correct,today);
+    const d=state.days[today]||{attempts:0,correct:0,ids:[]};d.attempts++;if(correct)d.correct++;if(!d.ids.includes(item.id))d.ids.push(item.id);state.days[today]=d;
+    if(!item.retry){s.results.push({id:item.id,correct});if(!correct)s.queue.push({id:item.id,retry:true});}
+    s.index++;revealed=false;typed='';autoCorrect=null;
+    if(s.index>=s.queue.length){summary={...s};state.session=null;save();nav('summary');}else{save();render();}
+  }
+  function modeUI(){return '<div class="mode-switch" aria-label="选择练习方式"><button data-mode="paper" class="'+(state.mode==='paper'?'active':'')+'" aria-pressed="'+(state.mode==='paper')+'">✎ 纸上默写</button><button data-mode="keyboard" class="'+(state.mode==='keyboard'?'active':'')+'" aria-pressed="'+(state.mode==='keyboard')+'">⌨ 键盘练习</button></div>';}
+  function home(){
+    const today=C.day(),seen=words.filter(w=>state.records[w.id]?.seen).length,due=words.filter(w=>state.records[w.id]?.seen&&state.records[w.id].due<=today).length,done=state.days[today]?.ids.length||0;
+    const nextSunday=new Date(today+'T12:00:00');nextSunday.setDate(nextSunday.getDate()+((7-nextSunday.getDay())%7));
+    const daysLeft=Math.max(1,Math.round((nextSunday-new Date(today+'T12:00:00'))/86400000)-2);
+    const newGoal=Math.ceil((words.length-seen)/daysLeft);
+    const plants='<div class="plant" aria-hidden="true"><svg viewBox="0 0 230 270" fill="none"><circle cx="116" cy="125" r="99" fill="#edf0df"/><path d="M114 203C110 160 118 115 127 62" stroke="#638465" stroke-width="5" stroke-linecap="round"/><path d="M122 108C82 107 66 78 75 55C106 50 126 72 122 108Z" fill="#8fa77d"/><path d="M118 145C150 142 169 117 162 94C132 92 114 117 118 145Z" fill="#668c67"/><path d="M114 176C83 175 67 154 71 133C97 129 115 148 114 176Z" fill="#aabd8e"/><path d="M124 79C149 73 160 52 151 35C129 38 121 55 124 79Z" fill="#aabd8e"/><path d="M79 200H153L143 245H91L79 200Z" fill="#d3ad83"/><path d="M76 200H156" stroke="#bc9570" stroke-width="8" stroke-linecap="round"/><path d="M45 224H62M181 199H194M165 246H185" stroke="#c5ceb3" stroke-width="3" stroke-linecap="round"/></svg></div>';
+    return '<section class="hero"><div class="hero-copy"><p class="eyebrow">'+dateLabel(today)+' · 每天一小轮</p><h1>先想一想，<br>再写下来。</h1><p class="muted">看到中文，试着写出英文。<br>一轮最多12项，错词稍后再见。</p><div><span class="tag">本周 '+words.length+' 项</span><span class="tag">周日下午默写</span></div>'+modeUI()+'<div class="hero-actions"><button class="primary" id="daily-start">'+(state.session?'继续上次练习 →':'开始今天的一小轮 →')+'</button><span class="note">'+(due?'有 '+due+' 项等你复习':newGoal?'今天建议新练约 '+newGoal+' 项，可分几轮':'今天的任务已完成，可以休息啦')+'</span></div></div>'+plants+'</section><div class="stats"><div class="stat"><strong>'+seen+'<small style="font-size:13px;color:var(--muted)"> / '+words.length+'</small></strong><span>已经练过</span></div><div class="stat"><strong>'+words.filter(w=>C.isMistake(state.records[w.id])).length+'</strong><span>还要巩固</span></div><div class="stat"><strong>'+done+'</strong><span>今天练过的词</span></div></div><div class="section-title"><h2>把一点复习，放进每一天</h2></div><div class="today-note">先复习到期的词，再学几个新词。写错的词会在本轮末尾再问一次；隔天还能写对，复习间隔才会慢慢拉长。<br><strong>今天写对 ≠ 永远记住，过两天再试试。</strong></div>';
+  }
+  function practice(){
+    const s=state.session;if(!s)return '<div class="empty"><h2>还没有开始练习</h2><button class="primary" data-go="home">去练一小轮</button></div>';
+    const item=s.queue[s.index],w=byId[item.id],initial=s.queue.filter(x=>!x.retry).length;
+    let content='<div class="practice-top"><button class="back" data-go="home">‹ 暂存并返回</button><span>'+esc(s.label)+' · '+(item.retry?'错词再试':s.results.length+1+' / '+initial)+'</span></div><div class="progress" aria-label="本轮进度"><i style="width:'+Math.round(s.index/s.queue.length*100)+'%"></i></div><section class="practice-card"><span class="status-pill '+(item.retry?'orange':'')+'">'+(item.retry?'刚才写错了，再试一次':'看中文 · 写英文')+'</span><div class="prompt">'+esc(w.zh)+'</div>';
+    if(!revealed){content+=s.mode==='keyboard'?'<form id="answer-form" style="width:100%"><label class="sr-only" for="spelling">输入英文拼写</label><input id="spelling" class="practice-input" placeholder="在这里写英文" autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" enterkeyhint="done" value="'+esc(typed)+'"><p class="note">短语里的空格也要记得写。</p><button type="submit" class="primary wide">核对拼写</button></form>':'<p class="instruction">先写在纸上，写完再核对。</p><button class="primary wide" id="reveal">我写好了，看看答案</button>';
+    }else{
+      content+='<div class="answer-panel"><p class="eyebrow">对照每一个字母</p><div class="answer" lang="en">'+esc(w.en)+'</div><button class="quiet" id="speak">♫ 听一遍发音</button>';
+      if(s.mode==='keyboard')content+='<div class="feedback '+(autoCorrect?'':'wrong')+'">'+(autoCorrect?'拼写正确。':'这次还差一点。你写的是：'+esc(typed))+'</div>';
+      else content+='<p class="note">少一个字母、漏一个词，也选“还要练”。</p>';
+      if(w.en==='(aero)/(air)plane')content+='<p class="note">可写 aeroplane / airplane / plane；课堂按老师要求。</p>';
+      if(w.en==='hear-heard')content+='<p class="note">按词表练习原形和过去式：hear → heard。</p>';
+      content+='</div>';
+    }
+    content+='</section>';
+    if(revealed)content+=s.mode==='paper'?'<div class="actions"><button class="danger" id="wrong">↻ 还要练</button><button class="primary" id="correct">✓ 写对了</button></div>':'<div class="actions"><button class="primary" id="next">'+(autoCorrect?'记下了，下一项 →':'看清楚了，稍后再试 →')+'</button></div>';
+    return content+'<p class="note" style="text-align:center">'+(s.mode==='paper'?'纸上写，屏幕帮你记住要复习哪些词。':'每个字母都写出来，记忆才有机会被检查。')+'</p>';
+  }
+  function wordRow(w){const r=state.records[w.id];return '<article class="word-row"><div><strong lang="en">'+esc(w.en)+'</strong><p>'+esc(w.zh)+'</p><small>'+esc(progressText(r))+'</small></div><button data-word="'+w.id+'" aria-label="练习 '+esc(w.en)+'">练一练</button></article>';}
+  function mistakes(){const list=words.filter(w=>C.isMistake(state.records[w.id]));return '<p class="eyebrow">这里的词，还想再见你几次</p><h1>再练一练</h1><p class="muted">记下写错的词。隔天连续回忆正确后，会从这里移走。</p>'+modeUI()+(list.length?'<div class="word-tools"><button class="primary" id="mistake-start">重练这 '+list.length+' 项</button></div><div class="word-list">'+list.map(wordRow).join('')+'</div>':'<div class="empty"><div class="empty-icon">🌿</div><h2>暂时没有要巩固的错词</h2><p class="muted">练习里选“还要练”，单词就会来到这里。<br>如实记录，才能帮你省下复习时间。</p><button class="primary" data-go="home">去练一小轮</button></div>');}
+  function wordPage(){return '<p class="eyebrow">来自本周《单词.docx》</p><h1>本周词表 <span class="muted" style="font-size:19px">'+words.length+' 项</span></h1><p class="muted">周五周六，可以打乱顺序做一次完整默写。</p>'+modeUI()+'<div class="word-tools"><button class="primary" id="mock-start">模拟默写 · '+words.length+' 项</button><button class="secondary" id="print">打印默写纸</button></div><label class="sr-only" for="search">搜索中英文</label><input id="search" class="search" placeholder="搜索英文或中文…" type="search"><div id="word-results" class="word-list">'+words.map(wordRow).join('')+'</div><div class="section-title"><h2>保存这周的练习记录</h2></div><p class="note">同一浏览器会自动保存。换手机或平板时，先导出备份，再在另一台设备导入；设备之间不会自动同步。</p><div class="word-tools"><button class="secondary" id="export">导出记录备份</button><button class="secondary" id="import">导入记录备份</button></div><input hidden id="import-file" type="file" accept=".json,application/json"><p class="note">词表按原文件保留。发音提示和允许的拼写变体仅辅助练习，课堂以老师要求为准。</p>';}
+  function summaryPage(){if(!summary)return '<div class="empty"><h2>开始下一小轮吧</h2><button class="primary" data-go="home">回到今天</button></div>';const results=summary.results,wrong=results.filter(x=>!x.correct),correct=results.length-wrong.length;return '<section class="summary"><div class="hero"><p class="eyebrow">这一小轮，完成了</p><h1>又多记住了一点点。</h1><div class="score">'+correct+'<small> / '+results.length+' 项</small></div><p class="muted">这是第一次作答时写对的数量。</p>'+(wrong.length?'<p>有 '+wrong.length+' 项值得再见一次，已经帮你记下。</p><div class="summary-words">'+wrong.map(x=>'<span lang="en">'+esc(byId[x.id].en)+'</span>').join('')+'</div>':'<p>这一轮第一次作答都写对了。<br>明天再回忆一次，看看还记不记得。</p>')+'<p class="note">可以休息一下。今天想继续，也可以再练一小轮。</p><div class="actions"><button class="secondary" data-go="home">回到今天</button><button class="primary" id="more">再来一小轮 →</button></div></div></section>';}
+  function render(){
+    const page=location.hash.slice(1)||'home';
+    const views={home,mistakes,words:wordPage,practice,summary:summaryPage};
+    $('#app').innerHTML=(!storageOK?'<div class="storage-warning">浏览器暂时无法读取或保存记录。请使用普通浏览模式，并在练习后导出备份。</div>':'')+(views[page]||home)();
+    document.querySelectorAll('.tabs a').forEach(a=>{const active=a.dataset.page===page;a.classList.toggle('active',active);if(active)a.setAttribute('aria-current','page');else a.removeAttribute('aria-current');});
+    document.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>nav(b.dataset.go));
+    document.querySelectorAll('[data-mode]').forEach(b=>b.onclick=()=>{state.mode=b.dataset.mode;save();render();});
+    document.querySelectorAll('[data-word]').forEach(b=>b.onclick=()=>start([byId[b.dataset.word]],'单词练习'));
+    if($('#daily-start'))$('#daily-start').onclick=()=>state.session?nav('practice'):start(C.dailyQueue(words,state.records),'每日练习');
+    if($('#reveal'))$('#reveal').onclick=()=>{revealed=true;render();};
+    if($('#wrong'))$('#wrong').onclick=()=>grade(false);if($('#correct'))$('#correct').onclick=()=>grade(true);
+    if($('#spelling'))$('#spelling').oninput=e=>typed=e.target.value;
+    if($('#answer-form'))$('#answer-form').onsubmit=e=>{e.preventDefault();if(!typed.trim()){toast('先写一个答案，再核对。');return;}autoCorrect=C.matches(byId[state.session.queue[state.session.index].id],typed);revealed=true;render();};
+    if($('#next'))$('#next').onclick=()=>grade(autoCorrect);
+    if($('#speak'))$('#speak').onclick=speak;
+    if($('#mistake-start'))$('#mistake-start').onclick=()=>start(C.shuffle(words.filter(w=>C.isMistake(state.records[w.id]))),'错词练习');
+    if($('#mock-start'))$('#mock-start').onclick=()=>start(C.shuffle(words),'整表模拟');
+    if($('#more'))$('#more').onclick=()=>{const list=C.dailyQueue(words,state.records);if(list.length)start(list,'每日练习');else{toast('今天没有到期的词了，明天再来。');nav('home');}};
+    if($('#search'))$('#search').oninput=e=>{const q=e.target.value.trim().toLowerCase();const list=words.filter(w=>w.en.toLowerCase().includes(q)||w.zh.includes(q));$('#word-results').innerHTML=list.length?list.map(wordRow).join(''):'<p class="note">没有找到这个词。</p>';$('#word-results').querySelectorAll('[data-word]').forEach(b=>b.onclick=()=>start([byId[b.dataset.word]],'单词练习'));};
+    if($('#print'))$('#print').onclick=()=>{$('#print-sheet').innerHTML='<h1>麦麦 · 本周单词默写</h1><p>日期：____________　　写完后再对照原词表检查。共 '+words.length+' 项。</p><ol>'+words.map(w=>'<li>'+esc(w.zh)+'<span></span></li>').join('')+'</ol>';window.print();};
+    if($('#export'))$('#export').onclick=()=>{const blob=new Blob([JSON.stringify({...state,session:null},null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='麦麦单词记录-'+C.day()+'.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);};
+    if($('#import'))$('#import').onclick=()=>$('#import-file').click();
+    if($('#import-file'))$('#import-file').onchange=async e=>{const file=e.target.files[0];if(!file)return;try{if(file.size>2e6)throw Error('备份文件过大');const imported=valid(JSON.parse(await file.text()));if(!confirm('导入会替换当前浏览器中的本周学习记录。建议先导出当前备份。确定导入吗？'))return;state=imported;summary=null;revealed=false;typed='';save();render();toast('学习记录已导入。');}catch(error){toast('无法导入：'+error.message);}};
+  }
+  function speak(){
+    if(!('speechSynthesis'in window)){toast('这台设备暂不支持发音，可以看答案继续练。');return;}
+    const w=byId[state.session.queue[state.session.index].id];let text=C.answers(w)[0].replace('hear-heard','hear, heard');
+    const u=new SpeechSynthesisUtterance(text);u.lang='en-GB';u.rate=.85;
+    const voices=speechSynthesis.getVoices(),voice=voices.find(v=>v.lang==='en-GB')||voices.find(v=>v.lang.startsWith('en'));if(voice)u.voice=voice;
+    u.onerror=()=>toast('发音暂时不可用，可以检查设备声音和网络。');speechSynthesis.cancel();speechSynthesis.speak(u);
+  }
+  $('#help-btn').onclick=()=>$('#help').showModal();$('#help-close').onclick=()=>$('#help').close();
+  window.addEventListener('hashchange',()=>{if('speechSynthesis'in window)speechSynthesis.cancel();render();window.scrollTo(0,0);});
+  render();
+})();
+
+</script>
+</body>
+</html>
