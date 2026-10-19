@@ -140,17 +140,37 @@ class BrowserTests(unittest.TestCase):
         self.assertEqual(self.page.locator('.word-row').count(), 43)
         self.assertTrue(all(u.startswith(self.base) for u in requested))
 
-    def test_click_uk_voice_phonics_slow_and_escape(self):
-        self.load(); self.page.locator('.word-card').first.click()
-        expect(self.page.locator('#phonics')).to_be_visible()
-        self.assertEqual(self.page.locator('.phonics-part>span').all_text_contents(), ['k','ee','p'])
+    def test_click_uk_voice_colors_original_text_without_popup_or_layout_shift(self):
+        self.load()
+        card = self.page.locator('.word-card').first
+        card.scroll_into_view_if_needed()
+        before = card.bounding_box()
+        card.click()
+        expect(self.page.locator('#phonics')).to_have_count(0)
+        expect(self.page.locator('dialog[open]')).to_have_count(0)
+        self.assertEqual(card.locator('.phonics-segment').all_text_contents(), ['k','ee','p'])
+        self.assertEqual(card.locator('.english').inner_text(), 'keep')
+        self.assertEqual(card.bounding_box(), before)
+        colors = card.locator('.phonics-segment').evaluate_all('(parts) => parts.map(p=>getComputedStyle(p).color)')
+        self.assertEqual(len(set(colors)), 3)
         self.assertEqual(self.page.evaluate('__spoken[0]'), {'text':'keep','rate':1,'lang':'en-GB','voice':'en-GB'})
-        self.page.click('#slow')
-        self.assertEqual(self.page.evaluate('__spoken[1].rate'), .75)
+        expect(self.page.locator('#voice-status')).to_be_hidden()
+        card.click()
+        self.assertEqual(self.page.evaluate('__spoken.length'), 2)
+        self.assertEqual(card.locator('.phonics-segment').count(), 3)
+        self.page.locator('.word-card').nth(1).click()
+        expect(card.locator('.phonics-segment')).to_have_count(0)
+        expect(card).to_have_attribute('aria-pressed', 'false')
         self.page.keyboard.press('Escape')
-        expect(self.page.locator('#phonics')).to_be_hidden()
-        expect(self.page.locator('.word-card').first).to_be_focused()
-        expect(self.page.locator('.word-card').first).to_have_attribute('aria-expanded', 'false')
+        expect(self.page.locator('.word-card').nth(1)).to_have_attribute('aria-pressed', 'false')
+
+    def test_coloring_preserves_all_original_spelling_spaces_and_punctuation(self):
+        self.load()
+        result = self.page.locator('.word-card').evaluate_all('cards => cards.map(card => { const before=card.querySelector(".english").textContent; card.click(); return {before,after:card.querySelector(".english").textContent,groups:card.querySelectorAll(".phonics-segment").length}; })')
+        self.assertEqual(len(result), 86)
+        for word in result:
+            self.assertEqual(word['before'], word['after'])
+            self.assertGreater(word['groups'], 0, word['before'])
 
     def test_missing_uk_voice_never_uses_us_voice(self):
         self.load(); self.page.evaluate('__voices = __voices.filter(v=>v.lang==="en-US")')
@@ -159,7 +179,7 @@ class BrowserTests(unittest.TestCase):
         self.assertEqual(self.page.evaluate('__spoken.length'), 0)
         self.page.evaluate('__voices.push({name:"UK",lang:"en-GB",localService:true});__voiceEvents.voiceschanged()')
         expect(self.page.locator('#voice-status')).to_contain_text('已就绪')
-        self.page.click('#repeat')
+        self.page.locator('.word-card').first.click()
         self.assertEqual(self.page.evaluate('__spoken.length'), 1)
 
     def test_speech_failure_is_visible(self):
@@ -172,8 +192,9 @@ class BrowserTests(unittest.TestCase):
         self.load(); self.import_week()
         expect(self.page.locator('#local-tag')).to_be_visible()
         self.page.locator('.word-card').first.click()
-        expect(self.page.locator('#phonics-hint')).to_contain_text('核对')
-        self.page.click('#phonics-close'); self.page.reload()
+        expect(self.page.locator('.word-card').first.locator('.phonics-segment')).to_have_count(0)
+        self.assertEqual(self.page.evaluate('__spoken[0].text'), 'moon')
+        self.page.reload()
         expect(self.page.locator('.word-card')).to_have_count(4)
         self.page.select_option('#week-select', SOURCE['weeks'][0]['id'])
         expect(self.page.locator('.word-card')).to_have_count(86)
@@ -231,14 +252,18 @@ class BrowserTests(unittest.TestCase):
         expect(self.page.locator('.chinese')).to_have_text('<img src=x onerror=alert(1)>')
         self.assertEqual(self.page.locator('#word-list img').count(), 0)
 
-    def test_mobile_layout_bottom_sheet_and_help(self):
+    def test_mobile_inline_coloring_and_help(self):
         self.page.set_viewport_size({'width':390,'height':844}); self.load()
         self.assertTrue(self.page.evaluate('document.documentElement.scrollWidth <= innerWidth'))
-        self.page.locator('.word-card').nth(85).click()
-        pop = self.page.locator('#phonics').bounding_box()
-        self.assertGreaterEqual(pop['x'], 0); self.assertLessEqual(pop['x'] + pop['width'], 390)
-        self.assertLessEqual(pop['y'] + pop['height'], 844)
-        self.page.click('#phonics-close'); self.page.click('#help-open')
+        card = self.page.locator('.word-card').nth(85)
+        card.scroll_into_view_if_needed()
+        before = card.bounding_box()
+        card.click()
+        self.assertEqual(card.locator('.english').inner_text(), 'would rather')
+        self.assertEqual(card.bounding_box(), before)
+        expect(self.page.locator('#phonics')).to_have_count(0)
+        expect(self.page.locator('dialog[open]')).to_have_count(0)
+        self.page.click('#help-open')
         expect(self.page.locator('#help-dialog')).to_be_visible()
         self.page.keyboard.press('Escape'); expect(self.page.locator('#help-dialog')).to_be_hidden()
 

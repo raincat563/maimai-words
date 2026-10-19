@@ -57,7 +57,7 @@
     render();
   }
   function render() {
-    closePhonics();
+    clearActiveWord();
     const week = weeks.find(w => w.id === selected), list = $('#word-list');
     list.replaceChildren(); list.setAttribute('aria-busy', 'false');
     if (!week) { list.append(el('p', 'loading', '还没有词表，导入第一周的单词吧。')); return; }
@@ -69,66 +69,73 @@
       row.forEach(word => {
         const button = el('button', 'word-card'); button.type = 'button'; button.dataset.index = i;
         button.setAttribute('aria-label', word.en + '，' + word.zh + '，听英音和拼读');
-        button.setAttribute('aria-expanded', 'false'); button.setAttribute('aria-controls', 'phonics');
+        button.setAttribute('aria-pressed', 'false');
         const info = el('span', 'word-info'), text = el('span', 'word-text');
         const en = el('span', 'english', word.en); en.lang = 'en';
         text.append(en, el('span', 'chinese', word.zh)); info.append(el('span', 'word-number', String(++i).padStart(2, '0')), text);
         const speaker = el('span', 'speaker'); speaker.setAttribute('aria-hidden', 'true'); speaker.innerHTML = icon;
-        button.append(info, speaker); button.onclick = event => { openWord(word, button); if (event.detail === 0) $('#repeat').focus({ preventScroll: true }); }; line.append(button);
+        button.append(info, speaker); button.onclick = () => playWord(word, button); line.append(button);
       }); list.append(line);
     });
   }
-  function closePhonics(restoreFocus = false) {
-    $('#phonics').hidden = true;
+  function clearActiveWord() {
     speechGeneration++; if ('speechSynthesis' in window) speechSynthesis.cancel();
-    if (anchor) { anchor.setAttribute('aria-expanded', 'false'); anchor.classList.remove('speaking'); if (restoreFocus) anchor.focus({ preventScroll: true }); }
-    activeWord = null; activeUtterance = null; anchor = null;
-  }
-  function positionPhonics() {
-    if ($('#phonics').hidden || !anchor || innerWidth <= 540) return;
-    const card = anchor.getBoundingClientRect(), pop = $('#phonics'), width = pop.offsetWidth, height = pop.offsetHeight;
-    const left = Math.max(12, Math.min(innerWidth - width - 12, card.left + 30));
-    const below = card.bottom + 8;
-    let top = below + height < innerHeight - 12 ? below : card.top - height - 8;
-    top = Math.max(12, Math.min(innerHeight - height - 12, top));
-    pop.style.left = left + 'px'; pop.style.top = top + 'px';
-  }
-  function openWord(word, button) {
-    closePhonics(); activeWord = word; anchor = button; button.setAttribute('aria-expanded', 'true');
-    const key = word.en.toLowerCase().trim();
-    const entry = Object.hasOwn(phonics, key) ? phonics[key] : null;
-    $('#phonics-word').textContent = word.en; $('#phonics-meaning').textContent = word.zh;
-    $('#phonics-ipa').textContent = entry?.ipa ? '/' + entry.ipa + '/' : '';
-    const parts = $('#phonics-parts'); parts.replaceChildren();
-    if (entry) {
-      entry.parts.forEach(part => { const block = el('span', 'phonics-part' + (entry.kind !== 'blend' ? ' phrase' : '')); block.append(el('span', '', part), el('small', '', entry.kind === 'blend' ? (part.length > 1 ? '━' : '•') : '')); parts.append(block); });
-      $('#phonics-hint').textContent = (entry.kind === 'syllables' ? '拍节奏读：' : entry.kind === 'phrase' ? '分词听，再连起来：' : '合音小提示：') + entry.hint;
-    } else {
-      $('#phonics-hint').textContent = '这个新词的拼读提示还在等大朋友核对。先听完整的发音，再跟读；不把字母随意拆开。';
+    if (anchor) {
+      anchor.setAttribute('aria-pressed', 'false'); anchor.classList.remove('speaking');
+      anchor.querySelector('.english').textContent = activeWord.en;
     }
-    $('#phonics').hidden = false; positionPhonics(); speak(1);
+    activeWord = null; activeUtterance = null; anchor = null; voiceStatus('');
+  }
+  function colorWord(node, word, entry) {
+    if (!entry) return;
+    const groups = (entry.inlineParts || entry.parts).flatMap(part => part.split(/[-\s]+/))
+      .map(part => part.replace(/[^a-z]/gi, '')).filter(Boolean);
+    // Only project reviewed groups when every letter matches the original spelling.
+    if (groups.join('').toLowerCase() !== word.replace(/[^a-z]/gi, '').toLowerCase()) return;
+    const fragment = document.createDocumentFragment();
+    let offset = 0;
+    groups.forEach((group, index) => {
+      const separatorStart = offset;
+      while (offset < word.length && !/[a-z]/i.test(word[offset])) offset++;
+      fragment.append(document.createTextNode(word.slice(separatorStart, offset)));
+      const start = offset;
+      let letters = 0;
+      while (offset < word.length && letters < group.length) {
+        if (/[a-z]/i.test(word[offset])) letters++;
+        offset++;
+      }
+      fragment.append(el('span', 'phonics-segment tone-' + index % 3, word.slice(start, offset)));
+    });
+    fragment.append(document.createTextNode(word.slice(offset)));
+    node.replaceChildren(fragment);
+  }
+  function playWord(word, button) {
+    clearActiveWord(); activeWord = word; anchor = button; button.setAttribute('aria-pressed', 'true');
+    const key = word.en.toLowerCase().trim();
+    colorWord(button.querySelector('.english'), word.en, Object.hasOwn(phonics, key) ? phonics[key] : null);
+    speak();
   }
   function britishVoice() {
     if (!('speechSynthesis' in window)) return null;
     return speechSynthesis.getVoices().filter(v => /^en-gb$/i.test(v.lang.replace('_', '-'))).sort((a, b) => Number(b.localService) - Number(a.localService))[0] || null;
   }
-  function voiceStatus(text, error = false) { $('#voice-status').textContent = text; $('#voice-status').classList.toggle('error', error); positionPhonics(); }
-  function speak(rate) {
+  function voiceStatus(text) { $('#voice-status').textContent = text; $('#voice-status').hidden = !text; }
+  function speak() {
     if (!activeWord) return;
     const voice = britishVoice();
-    if (!voice) { voiceStatus('此设备尚无可用英音。请在系统语音设置下载 English (UK)，然后再点一次。', true); return; }
+    if (!voice) { voiceStatus('此设备尚无可用英音。请在系统语音设置下载 English (UK)，然后再点单词。'); return; }
     const entry = Object.hasOwn(phonics, activeWord.en.toLowerCase().trim()) ? phonics[activeWord.en.toLowerCase().trim()] : null;
     const token = ++speechGeneration; speechSynthesis.cancel();
     const u = new SpeechSynthesisUtterance(entry?.say || activeWord.en);
-    activeUtterance = u; u.voice = voice; u.lang = 'en-GB'; u.rate = rate; u.pitch = 1;
-    voiceStatus('正在准备英音…');
-    u.onstart = () => { if (token !== speechGeneration) return; anchor?.classList.add('speaking'); voiceStatus(rate < 1 ? '慢慢听，留意每一个声音。' : '正在播放英式英语'); };
-    u.onend = () => { if (token !== speechGeneration) return; anchor?.classList.remove('speaking'); activeUtterance = null; voiceStatus('英式英语 · 想再听一次，点下面的按钮。'); };
-    u.onerror = e => { if (token !== speechGeneration || ['canceled', 'interrupted'].includes(e.error)) return; anchor?.classList.remove('speaking'); voiceStatus('英音暂时没能播放，请检查设备声音与网络，再点一次。', true); };
+    activeUtterance = u; u.voice = voice; u.lang = 'en-GB'; u.rate = 1; u.pitch = 1;
+    voiceStatus('');
+    u.onstart = () => { if (token !== speechGeneration) return; anchor?.classList.add('speaking'); };
+    u.onend = () => { if (token !== speechGeneration) return; anchor?.classList.remove('speaking'); activeUtterance = null; };
+    u.onerror = e => { if (token !== speechGeneration || ['canceled', 'interrupted'].includes(e.error)) return; anchor?.classList.remove('speaking'); activeUtterance = null; voiceStatus('英音暂时没能播放，请检查设备声音与网络，再点一次单词。'); };
     speechSynthesis.speak(u);
   }
   function showImport() {
-    closePhonics(); pending = null; importGeneration++;
+    clearActiveWord(); pending = null; importGeneration++;
     $('#import-preview').hidden = true; $('#import-error').hidden = true; $('#word-file').value = '';
     $('#import-dialog').showModal();
   }
@@ -177,18 +184,15 @@
     const a = el('a'); const url = URL.createObjectURL(blob); a.href = url; a.download = '麦麦的词表备份-' + today() + '.json'; a.click(); setTimeout(() => URL.revokeObjectURL(url), 1000);
   }
   async function init() {
-    $('#help-open').onclick = () => { closePhonics(); $('#help-dialog').showModal(); };
+    $('#help-open').onclick = () => { clearActiveWord(); $('#help-dialog').showModal(); };
     $('#import-open').onclick = showImport; $('#word-file').onchange = onFile; $('#import-confirm').onclick = confirmImport;
     $('[data-close="import-dialog"]').onclick = () => { importGeneration++; pending = null; $('#import-dialog').close(); };
     $('[data-close="help-dialog"]').onclick = () => $('#help-dialog').close();
     $('#import-dialog').addEventListener('cancel', () => { importGeneration++; pending = null; });
     $('#backup').onclick = backup;
     $('#week-select').onchange = e => { selected = e.target.value; render(); try { localStorage.setItem(SELECTION, selected); } catch (_) {} };
-    $('#phonics-close').onclick = () => closePhonics(true); $('#repeat').onclick = () => speak(1); $('#slow').onclick = () => speak(.75);
-    document.addEventListener('keydown', e => { if (e.key === 'Escape' && !$('#phonics').hidden) closePhonics(true); });
-    document.addEventListener('pointerdown', e => { if (!$('#phonics').hidden && !$('#phonics').contains(e.target) && !e.target.closest('.word-card')) closePhonics(); });
-    window.addEventListener('resize', positionPhonics); window.addEventListener('scroll', positionPhonics, { passive: true });
-    if ('speechSynthesis' in window) { speechSynthesis.getVoices(); speechSynthesis.addEventListener('voiceschanged', () => { if (activeWord && !activeUtterance && britishVoice()) voiceStatus('英式语音已就绪，点“再听一遍”开始。'); }); }
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') clearActiveWord(); });
+    if ('speechSynthesis' in window) { speechSynthesis.getVoices(); speechSynthesis.addEventListener('voiceschanged', () => { if (activeWord && !activeUtterance && britishVoice()) voiceStatus('英式语音已就绪，再点单词即可播放。'); }); }
     readLocal();
     const [dataResult, phonicsResult] = await Promise.allSettled([
       fetch('./data/weeks.json', { cache: 'no-cache' }).then(r => { if (!r.ok) throw Error('词表读取失败'); return r.json(); }).then(validateData),

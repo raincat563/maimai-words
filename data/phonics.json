@@ -669,7 +669,17 @@
     ],
     "ipa": "ˈeərəpleɪn",
     "hint": "原文件把几种写法放在一起。英国常说 aeroplane；plane 里的 a 与不发音的 e 搭档，读 /eɪ/。",
-    "say": "aeroplane. airplane. plane."
+    "say": "aeroplane. airplane. plane.",
+    "inlineParts": [
+      "ae",
+      "ro",
+      "air",
+      "p",
+      "l",
+      "a",
+      "n",
+      "e"
+    ]
   },
   "coach": {
     "kind": "blend",
