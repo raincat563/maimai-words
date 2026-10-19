@@ -4,6 +4,7 @@
   const STORE = 'maimai-garden-collections-v2';
   const SELECTION = 'maimai-garden-selected-v2';
   const LATEST = 'maimai-garden-latest-published-v2';
+  const icon = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m11 5-5 4H3v6h3l5 4V5Z"/><path d="M15 8a6 6 0 0 1 0 8m3-11a10 10 0 0 1 0 14"/></svg>';
   let published = [], local = [], weeks = [], phonics = {};
   let selected = '', activeWord = null, anchor = null, pending = null;
   let toastTimer, importGeneration = 0, speechGeneration = 0, activeUtterance = null;
@@ -59,18 +60,21 @@
     clearActiveWord();
     const week = weeks.find(w => w.id === selected), list = $('#word-list');
     list.replaceChildren(); list.setAttribute('aria-busy', 'false');
-    if (!week) { list.append(el('p', 'loading', '暂无词表，请从右上角菜单导入。')); return; }
-    $('#local-tag').hidden = !week.isLocal;
+    if (!week) { list.append(el('p', 'loading', '还没有词表，导入第一周的单词吧。')); return; }
+    $('#word-count').textContent = count(week) + ' 项'; $('#local-tag').hidden = !week.isLocal;
+    $('#list-date').textContent = week.isLocal ? '仅此浏览器' : '已发布 · ' + week.date.replaceAll('-', '.');
+    let i = 0;
     week.rows.forEach(row => {
       const line = el('div', 'word-row'); line.style.setProperty('--columns', row.length);
       row.forEach(word => {
-        const button = el('button', 'word-card'); button.type = 'button';
+        const button = el('button', 'word-card'); button.type = 'button'; button.dataset.index = i;
         button.setAttribute('aria-label', word.en + '，' + word.zh + '，听英音和拼读');
         button.setAttribute('aria-pressed', 'false');
-        const text = el('span', 'word-text');
+        const info = el('span', 'word-info'), text = el('span', 'word-text');
         const en = el('span', 'english', word.en); en.lang = 'en';
-        text.append(en, el('span', 'chinese', word.zh));
-        button.append(text); button.onclick = () => playWord(word, button); line.append(button);
+        text.append(en, el('span', 'chinese', word.zh)); info.append(el('span', 'word-number', String(++i).padStart(2, '0')), text);
+        const speaker = el('span', 'speaker'); speaker.setAttribute('aria-hidden', 'true'); speaker.innerHTML = icon;
+        button.append(info, speaker); button.onclick = () => playWord(word, button); line.append(button);
       }); list.append(line);
     });
   }
@@ -131,7 +135,7 @@
     speechSynthesis.speak(u);
   }
   function showImport() {
-    $('#manage-menu').open = false; clearActiveWord(); pending = null; importGeneration++;
+    clearActiveWord(); pending = null; importGeneration++;
     $('#import-preview').hidden = true; $('#import-error').hidden = true; $('#word-file').value = '';
     $('#import-dialog').showModal();
   }
@@ -176,18 +180,18 @@
     toast('新词表已加入此设备，旧词表都还在。');
   }
   function backup() {
-    $('#manage-menu').open = false;
     const blob = new Blob([JSON.stringify({ version: 1, weeks: weeks.map(({ isLocal, ...w }) => w) }, null, 2)], { type: 'application/json' });
     const a = el('a'); const url = URL.createObjectURL(blob); a.href = url; a.download = '麦麦的词表备份-' + today() + '.json'; a.click(); setTimeout(() => URL.revokeObjectURL(url), 1000);
   }
   async function init() {
+    $('#help-open').onclick = () => { clearActiveWord(); $('#help-dialog').showModal(); };
     $('#import-open').onclick = showImport; $('#word-file').onchange = onFile; $('#import-confirm').onclick = confirmImport;
     $('[data-close="import-dialog"]').onclick = () => { importGeneration++; pending = null; $('#import-dialog').close(); };
+    $('[data-close="help-dialog"]').onclick = () => $('#help-dialog').close();
     $('#import-dialog').addEventListener('cancel', () => { importGeneration++; pending = null; });
     $('#backup').onclick = backup;
     $('#week-select').onchange = e => { selected = e.target.value; render(); try { localStorage.setItem(SELECTION, selected); } catch (_) {} };
-    document.addEventListener('keydown', e => { if (e.key === 'Escape') { clearActiveWord(); $('#manage-menu').open = false; } });
-    document.addEventListener('pointerdown', e => { if (!$('#manage-menu').contains(e.target)) $('#manage-menu').open = false; });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') clearActiveWord(); });
     if ('speechSynthesis' in window) { speechSynthesis.getVoices(); speechSynthesis.addEventListener('voiceschanged', () => { if (activeWord && !activeUtterance && britishVoice()) voiceStatus('英式语音已就绪，再点单词即可播放。'); }); }
     readLocal();
     const [dataResult, phonicsResult] = await Promise.allSettled([

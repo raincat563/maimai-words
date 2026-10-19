@@ -120,12 +120,7 @@ class BrowserTests(unittest.TestCase):
         self.page.goto(self.base)
         expect(self.page.locator('.word-card')).to_have_count(86)
 
-    def open_menu(self):
-        if not self.page.locator('#manage-menu').evaluate('node => node.open'):
-            self.page.locator('#manage-menu summary').click()
-
     def upload(self, data=None, name='新词.docx'):
-        self.open_menu()
         self.page.click('#import-open')
         self.page.locator('#word-file').set_input_files({'name':name,'mimeType':'application/octet-stream','buffer': data if data is not None else docx_bytes()})
 
@@ -214,7 +209,6 @@ class BrowserTests(unittest.TestCase):
 
     def test_export_and_restore_merges_without_replacing_published_week(self):
         self.load(); self.import_week()
-        self.open_menu()
         with self.page.expect_download() as result: self.page.click('#backup')
         backup = Path(result.value.path()).read_bytes()
         self.assertEqual(len(json.loads(backup)['weeks']), 2)
@@ -258,12 +252,9 @@ class BrowserTests(unittest.TestCase):
         expect(self.page.locator('.chinese')).to_have_text('<img src=x onerror=alert(1)>')
         self.assertEqual(self.page.locator('#word-list img').count(), 0)
 
-    def test_mobile_compact_layout_inline_coloring_and_menu(self):
+    def test_mobile_inline_coloring_and_help(self):
         self.page.set_viewport_size({'width':390,'height':844}); self.load()
         self.assertTrue(self.page.evaluate('document.documentElement.scrollWidth <= innerWidth'))
-        self.assertLess(self.page.locator('.word-card').first.bounding_box()['y'], 100)
-        expect(self.page.locator('.hero, footer, #help-dialog')).to_have_count(0)
-        expect(self.page.locator('#import-open')).to_be_hidden()
         card = self.page.locator('.word-card').nth(85)
         card.scroll_into_view_if_needed()
         before = card.bounding_box()
@@ -272,11 +263,9 @@ class BrowserTests(unittest.TestCase):
         self.assertEqual(card.bounding_box(), before)
         expect(self.page.locator('#phonics')).to_have_count(0)
         expect(self.page.locator('dialog[open]')).to_have_count(0)
-        self.open_menu()
-        expect(self.page.locator('#import-open')).to_be_visible()
-        expect(self.page.locator('#backup')).to_be_visible()
-        self.page.keyboard.press('Escape')
-        expect(self.page.locator('#import-open')).to_be_hidden()
+        self.page.click('#help-open')
+        expect(self.page.locator('#help-dialog')).to_be_visible()
+        self.page.keyboard.press('Escape'); expect(self.page.locator('#help-dialog')).to_be_hidden()
 
     def test_new_published_week_opens_latest_and_keeps_history(self):
         self.load()
