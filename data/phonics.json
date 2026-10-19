@@ -1,0 +1,840 @@
+{
+  "keep": {
+    "kind": "blend",
+    "parts": [
+      "k",
+      "ee",
+      "p"
+    ],
+    "ipa": "kiːp",
+    "hint": "ee 两个字母合起来，发长长的 /iː/，再把 k、ee、p 连起来。"
+  },
+  "mind": {
+    "kind": "blend",
+    "parts": [
+      "m",
+      "i",
+      "n",
+      "d"
+    ],
+    "ipa": "maɪnd",
+    "hint": "小心这个 i：在 mind 里读字母名 /aɪ/，不像 miss 里的短音。"
+  },
+  "miss": {
+    "kind": "blend",
+    "parts": [
+      "m",
+      "i",
+      "ss"
+    ],
+    "ipa": "mɪs",
+    "hint": "i 发短音 /ɪ/；尾巴 ss 虽然写两次，只发一次 /s/。"
+  },
+  "brazil": {
+    "kind": "syllables",
+    "parts": [
+      "Bra",
+      "zil"
+    ],
+    "ipa": "brəˈzɪl",
+    "hint": "巴西的名字分两拍，重读后面的 zil；开头轻轻读 /brə/。"
+  },
+  "probably": {
+    "kind": "syllables",
+    "parts": [
+      "prob",
+      "a",
+      "bly"
+    ],
+    "ipa": "ˈprɒbəbli",
+    "hint": "先慢慢读三拍，重读 prob；最后 y 读 /i/。熟练后中间一拍可能很轻。"
+  },
+  "perhaps": {
+    "kind": "syllables",
+    "parts": [
+      "per",
+      "haps"
+    ],
+    "ipa": "pəˈhæps",
+    "hint": "两拍，重读 haps。开头 per 轻轻读 /pə/，别用字母名去读。"
+  },
+  "be away": {
+    "kind": "phrase",
+    "parts": [
+      "be",
+      "a-way"
+    ],
+    "ipa": "biː əˈweɪ",
+    "hint": "先读 be，再读 away；away 重读 way，ay 一起发 /eɪ/。"
+  },
+  "attractive": {
+    "kind": "syllables",
+    "parts": [
+      "at",
+      "trac",
+      "tive"
+    ],
+    "ipa": "əˈtræktɪv",
+    "hint": "三拍，重读中间 trac；开头 a 轻轻读 /ə/，结尾 e 不单独发音。"
+  },
+  "happen": {
+    "kind": "syllables",
+    "parts": [
+      "hap",
+      "pen"
+    ],
+    "ipa": "ˈhæpən",
+    "hint": "两拍，重读 hap；pp 不是读两次，后半轻轻跟上。"
+  },
+  "guide": {
+    "kind": "blend",
+    "parts": [
+      "g",
+      "ui",
+      "d",
+      "e"
+    ],
+    "ipa": "ɡaɪd",
+    "hint": "这是要记住的拼法：ui 在这里发 /aɪ/，u 和尾巴 e 不各自读出来。"
+  },
+  "band": {
+    "kind": "blend",
+    "parts": [
+      "b",
+      "a",
+      "n",
+      "d"
+    ],
+    "ipa": "bænd",
+    "hint": "a 是短音 /æ/。把四个声音连起来，最后的 d 轻轻收住。"
+  },
+  "play": {
+    "kind": "blend",
+    "parts": [
+      "p",
+      "l",
+      "ay"
+    ],
+    "ipa": "pleɪ",
+    "hint": "ay 是一组，读 /eɪ/。p 和 l 顺着连起来，不要在中间加元音。"
+  },
+  "exhibition": {
+    "kind": "syllables",
+    "parts": [
+      "ex",
+      "hi",
+      "bi",
+      "tion"
+    ],
+    "ipa": "ˌeksɪˈbɪʃən",
+    "hint": "四拍，重读 bi；h 在这里不发音，tion 合起来读 /ʃən/。"
+  },
+  "winning": {
+    "kind": "syllables",
+    "parts": [
+      "win",
+      "ning"
+    ],
+    "ipa": "ˈwɪnɪŋ",
+    "hint": "两拍，重读 win；结尾 ng 合起来发 /ŋ/，不要再加一个 g 的声音。"
+  },
+  "place": {
+    "kind": "blend",
+    "parts": [
+      "p",
+      "l",
+      "a",
+      "c",
+      "e"
+    ],
+    "ipa": "pleɪs",
+    "hint": "尾巴 e 不发音，让 a 读 /eɪ/；c 在 e 前面读 /s/。"
+  },
+  "national": {
+    "kind": "syllables",
+    "parts": [
+      "na",
+      "tion",
+      "al"
+    ],
+    "ipa": "ˈnæʃənəl",
+    "hint": "重读开头，a 读短音 /æ/；tion 合起来读 /ʃən/，最后一拍轻轻读。"
+  },
+  "final": {
+    "kind": "syllables",
+    "parts": [
+      "fi",
+      "nal"
+    ],
+    "ipa": "ˈfaɪnəl",
+    "hint": "两拍，重读 fi，i 在这里读 /aɪ/；后半轻轻读 /nəl/。"
+  },
+  "chance": {
+    "kind": "blend",
+    "parts": [
+      "ch",
+      "a",
+      "n",
+      "c",
+      "e"
+    ],
+    "ipa": "tʃɑːns",
+    "hint": "ch 是一组，发 /tʃ/；英音这里的 a 拉长为 /ɑː/，ce 发 /s/，e 不另读。"
+  },
+  "album": {
+    "kind": "syllables",
+    "parts": [
+      "al",
+      "bum"
+    ],
+    "ipa": "ˈælbəm",
+    "hint": "两拍，重读 al。开头 a 读 /æ/，后面 u 变成轻轻的 /ə/。"
+  },
+  "classic": {
+    "kind": "syllables",
+    "parts": [
+      "clas",
+      "sic"
+    ],
+    "ipa": "ˈklæsɪk",
+    "hint": "两拍，重读 clas；a 是短音 /æ/，末尾 c 发 /k/。"
+  },
+  "star": {
+    "kind": "blend",
+    "parts": [
+      "s",
+      "t",
+      "ar"
+    ],
+    "ipa": "stɑː",
+    "hint": "ar 一起发长音 /ɑː/。普通英音里，结尾 r 不另外卷舌。"
+  },
+  "show off": {
+    "kind": "phrase",
+    "parts": [
+      "sh-ow",
+      "o-ff"
+    ],
+    "ipa": "ʃəʊ ɒf",
+    "hint": "show 的 sh 发 /ʃ/、ow 发 /əʊ/；off 的 o 是短音，ff 只发一次 /f/。"
+  },
+  "skill": {
+    "kind": "blend",
+    "parts": [
+      "s",
+      "k",
+      "i",
+      "ll"
+    ],
+    "ipa": "skɪl",
+    "hint": "s、k 连起来，不要在前面加一个元音；i 短读，ll 只发一次 /l/。"
+  },
+  "performance": {
+    "kind": "syllables",
+    "parts": [
+      "per",
+      "for",
+      "mance"
+    ],
+    "ipa": "pəˈfɔːməns",
+    "hint": "三拍，重读 for；开头和结尾都轻轻读。英音里的 or 不另外卷舌。"
+  },
+  "over": {
+    "kind": "syllables",
+    "parts": [
+      "o",
+      "ver"
+    ],
+    "ipa": "ˈəʊvə",
+    "hint": "两拍，重读 o，读 /əʊ/；后半轻轻读 /və/。"
+  },
+  "decide to": {
+    "kind": "phrase",
+    "parts": [
+      "de-cide",
+      "to"
+    ],
+    "ipa": "dɪˈsaɪd tuː",
+    "hint": "decide 重读 cide：i 读 /aɪ/、c 读 /s/，尾巴 e 不另读；再连上 to。"
+  },
+  "push": {
+    "kind": "blend",
+    "parts": [
+      "p",
+      "u",
+      "sh"
+    ],
+    "ipa": "pʊʃ",
+    "hint": "sh 合起来发 /ʃ/。注意 u 在这里是 /ʊ/，不是 bus 里的 /ʌ/。"
+  },
+  "alone": {
+    "kind": "syllables",
+    "parts": [
+      "a",
+      "lone"
+    ],
+    "ipa": "əˈləʊn",
+    "hint": "两拍，重读 lone；开头 a 轻读，o 与尾巴不发音的 e 搭档，读 /əʊ/。"
+  },
+  "juggle": {
+    "kind": "syllables",
+    "parts": [
+      "jug",
+      "gle"
+    ],
+    "ipa": "ˈdʒʌɡəl",
+    "hint": "两拍，重读 jug；j 发 /dʒ/，结尾 gle 轻轻读 /ɡəl/。"
+  },
+  "take": {
+    "kind": "blend",
+    "parts": [
+      "t",
+      "a",
+      "k",
+      "e"
+    ],
+    "ipa": "teɪk",
+    "hint": "a 和末尾不发音的 e 是一对搭档，让 a 读字母名 /eɪ/。"
+  },
+  "for free": {
+    "kind": "phrase",
+    "parts": [
+      "for",
+      "f-r-ee"
+    ],
+    "ipa": "fə friː",
+    "hint": "free 的 ee 一起发长音 /iː/；前面的 for 在短语里通常轻轻读 /fə/。"
+  },
+  "future": {
+    "kind": "syllables",
+    "parts": [
+      "fu",
+      "ture"
+    ],
+    "ipa": "ˈfjuːtʃə",
+    "hint": "两拍，重读 fu，读 /fjuː/；ture 在这里读 /tʃə/，要整组听。"
+  },
+  "industry": {
+    "kind": "syllables",
+    "parts": [
+      "in",
+      "dus",
+      "try"
+    ],
+    "ipa": "ˈɪndəstri",
+    "hint": "听三拍的节奏，重读开头 in；中间元音很轻，最后 y 发 /i/。"
+  },
+  "promise to": {
+    "kind": "phrase",
+    "parts": [
+      "prom-ise",
+      "to"
+    ],
+    "ipa": "ˈprɒmɪs tuː",
+    "hint": "promise 重读开头，i 是短音 /ɪ/，尾巴 e 不发音；再连上 to。"
+  },
+  "be tired of": {
+    "kind": "phrase",
+    "parts": [
+      "be",
+      "tired",
+      "of"
+    ],
+    "ipa": "biː ˈtaɪəd əv",
+    "hint": "分三个词听。tired 里的 ire 像 /aɪə/；of 在短语里轻读 /əv/，f 在这里发 /v/。"
+  },
+  "wait (for)": {
+    "kind": "phrase",
+    "parts": [
+      "w-ai-t",
+      "for"
+    ],
+    "ipa": "weɪt fɔː",
+    "hint": "wait 的 ai 是一组，读 /eɪ/；括号表示 for 可按句子需要选用。",
+    "say": "wait for"
+  },
+  "suggest": {
+    "kind": "syllables",
+    "parts": [
+      "sug",
+      "gest"
+    ],
+    "ipa": "səˈdʒest",
+    "hint": "两拍，重读 gest；开头轻读 /sə/，英音这里的 gg 不读两遍。"
+  },
+  "accept": {
+    "kind": "syllables",
+    "parts": [
+      "ac",
+      "cept"
+    ],
+    "ipa": "əkˈsept",
+    "hint": "两拍，重读 cept；两个 c 各有声音，前一个 /k/、后一个 /s/。"
+  },
+  "refuse": {
+    "kind": "syllables",
+    "parts": [
+      "re",
+      "fuse"
+    ],
+    "ipa": "rɪˈfjuːz",
+    "hint": "这里是动词“拒绝”，重读 fuse；u 读 /juː/，s 发 /z/，e 不另读。"
+  },
+  "theatre": {
+    "kind": "syllables",
+    "parts": [
+      "thea",
+      "tre"
+    ],
+    "ipa": "ˈθɪətə",
+    "hint": "两拍，重读前面；th 要把舌尖轻放齿间，送气 /θ/。这是英式拼写。"
+  },
+  "each": {
+    "kind": "blend",
+    "parts": [
+      "ea",
+      "ch"
+    ],
+    "ipa": "iːtʃ",
+    "hint": "ea 合起来发 /iː/，ch 合起来发 /tʃ/；两组声音连起来。"
+  },
+  "contact": {
+    "kind": "syllables",
+    "parts": [
+      "con",
+      "tact"
+    ],
+    "ipa": "ˈkɒntækt",
+    "hint": "两拍，重读 con；开头 o 短读 /ɒ/，后面的 a 读 /æ/。"
+  },
+  "practise": {
+    "kind": "syllables",
+    "parts": [
+      "prac",
+      "tise"
+    ],
+    "ipa": "ˈpræktɪs",
+    "hint": "两拍，重读 prac；尾巴 tise 读 /tɪs/，这里 s 发 /s/、e 不另读。"
+  },
+  "hear-heard": {
+    "kind": "phrase",
+    "parts": [
+      "h-ear",
+      "h-ear-d"
+    ],
+    "ipa": "hɪə — hɜːd",
+    "hint": "这里是原形和过去式，不是一个复合词：hear 的 ear 读 /ɪə/，heard 里变成 /ɜː/。",
+    "say": "hear. heard."
+  },
+  "anyway": {
+    "kind": "syllables",
+    "parts": [
+      "an",
+      "y",
+      "way"
+    ],
+    "ipa": "ˈeniweɪ",
+    "hint": "先听 any，再接 way。any 的 a 是特别读法 /e/；way 的 ay 读 /eɪ/。"
+  },
+  "vary": {
+    "kind": "syllables",
+    "parts": [
+      "var",
+      "y"
+    ],
+    "ipa": "ˈveəri",
+    "hint": "两拍，重读前面；这里的 ar 不读 star 里的 /ɑː/，要听 /eə/。"
+  },
+  "even": {
+    "kind": "syllables",
+    "parts": [
+      "e",
+      "ven"
+    ],
+    "ipa": "ˈiːvən",
+    "hint": "两拍，重读 e，发长音 /iː/；后半轻轻读 /vən/。"
+  },
+  "jazz": {
+    "kind": "blend",
+    "parts": [
+      "j",
+      "a",
+      "zz"
+    ],
+    "ipa": "dʒæz",
+    "hint": "j 发 /dʒ/，a 短读 /æ/，zz 虽写两次，只发一次 /z/。"
+  },
+  "seat": {
+    "kind": "blend",
+    "parts": [
+      "s",
+      "ea",
+      "t"
+    ],
+    "ipa": "siːt",
+    "hint": "ea 是一组，在这里发长音 /iː/。最后 t 轻轻收住。"
+  },
+  "itself": {
+    "kind": "syllables",
+    "parts": [
+      "it",
+      "self"
+    ],
+    "ipa": "ɪtˈself",
+    "hint": "先 it，再 self，重读 self；里面的 e 发短音 /e/。"
+  },
+  "numbered": {
+    "kind": "syllables",
+    "parts": [
+      "num",
+      "bered"
+    ],
+    "ipa": "ˈnʌmbəd",
+    "hint": "重读 num；词尾 ed 在这里发 /d/，不要多读出一拍。"
+  },
+  "front": {
+    "kind": "blend",
+    "parts": [
+      "f",
+      "r",
+      "o",
+      "n",
+      "t"
+    ],
+    "ipa": "frʌnt",
+    "hint": "特别留意 o：这个词里读 /ʌ/，不像 cross 里的 o。"
+  },
+  "by": {
+    "kind": "blend",
+    "parts": [
+      "b",
+      "y"
+    ],
+    "ipa": "baɪ",
+    "hint": "词尾 y 在这个短词里读 /aɪ/，像字母 i 的名字。"
+  },
+  "quarter": {
+    "kind": "syllables",
+    "parts": [
+      "quar",
+      "ter"
+    ],
+    "ipa": "ˈkwɔːtə",
+    "hint": "两拍，重读 quar；qu 发 /kw/，这里 ar 的声音是 /ɔː/。"
+  },
+  "as you know": {
+    "kind": "phrase",
+    "parts": [
+      "as",
+      "you",
+      "kn-ow"
+    ],
+    "ipa": "əz juː nəʊ",
+    "hint": "先分三个词听；know 的 k 不发音，ow 读 /əʊ/；as 在短语里常轻读。"
+  },
+  "sell": {
+    "kind": "blend",
+    "parts": [
+      "s",
+      "e",
+      "ll"
+    ],
+    "ipa": "sel",
+    "hint": "e 发短音 /e/，ll 虽然写两次，只发一次 /l/。"
+  },
+  "adult": {
+    "kind": "syllables",
+    "parts": [
+      "a",
+      "dult"
+    ],
+    "ipa": "ˈædʌlt",
+    "hint": "这里采用常见英式读法，重读前面；也能听到重读后面的另一种读法。"
+  },
+  "finally": {
+    "kind": "syllables",
+    "parts": [
+      "fi",
+      "nal",
+      "ly"
+    ],
+    "ipa": "ˈfaɪnəli",
+    "hint": "三拍，重读 fi，i 发 /aɪ/；后面轻轻跟上，最后 y 发 /i/。"
+  },
+  "as": {
+    "kind": "blend",
+    "parts": [
+      "a",
+      "s"
+    ],
+    "ipa": "æz",
+    "hint": "单独读时 a 发 /æ/，注意 s 在这里有声，发 /z/。"
+  },
+  "ask … to …": {
+    "kind": "phrase",
+    "parts": [
+      "ask",
+      "…",
+      "to",
+      "…"
+    ],
+    "ipa": "ɑːsk … tuː …",
+    "hint": "英音 ask 的 a 发长音 /ɑː/；省略号是留给“某人”和“做某事”的位置，不用念。",
+    "say": "ask someone to"
+  },
+  "awesome": {
+    "kind": "syllables",
+    "parts": [
+      "awe",
+      "some"
+    ],
+    "ipa": "ˈɔːsəm",
+    "hint": "两拍，重读 awe，发 /ɔː/；some 轻读 /səm/，不要按 home 的 o 去读。"
+  },
+  "amazing": {
+    "kind": "syllables",
+    "parts": [
+      "a",
+      "maz",
+      "ing"
+    ],
+    "ipa": "əˈmeɪzɪŋ",
+    "hint": "三拍，重读中间；a 在中间读 /eɪ/，z 发 /z/，ng 合起来发 /ŋ/。"
+  },
+  "terrible": {
+    "kind": "syllables",
+    "parts": [
+      "ter",
+      "ri",
+      "ble"
+    ],
+    "ipa": "ˈterəbəl",
+    "hint": "三拍，重读 ter；后面的元音轻轻读，ble 读 /bəl/。"
+  },
+  "horrible": {
+    "kind": "syllables",
+    "parts": [
+      "hor",
+      "ri",
+      "ble"
+    ],
+    "ipa": "ˈhɒrəbəl",
+    "hint": "三拍，重读 hor；o 在这里是短音 /ɒ/，别读成 horse 里的长音。"
+  },
+  "digital": {
+    "kind": "syllables",
+    "parts": [
+      "dig",
+      "i",
+      "tal"
+    ],
+    "ipa": "ˈdɪdʒɪtəl",
+    "hint": "三拍，重读开头；g 在这里发 /dʒ/，结尾 tal 轻读 /təl/。"
+  },
+  "quite": {
+    "kind": "blend",
+    "parts": [
+      "qu",
+      "i",
+      "t",
+      "e"
+    ],
+    "ipa": "kwaɪt",
+    "hint": "qu 合起来发 /kw/，i 与末尾不发音的 e 搭档，读 /aɪ/。"
+  },
+  "acting": {
+    "kind": "syllables",
+    "parts": [
+      "act",
+      "ing"
+    ],
+    "ipa": "ˈæktɪŋ",
+    "hint": "先读 act，再接 ing；ng 合起来发 /ŋ/，重读前半。"
+  },
+  "engine": {
+    "kind": "syllables",
+    "parts": [
+      "en",
+      "gine"
+    ],
+    "ipa": "ˈendʒɪn",
+    "hint": "两拍，重读 en；g 在这里发 /dʒ/。特别注意 i 是短音，不能套用所有 magic e 的规则。"
+  },
+  "(aero)/(air)plane": {
+    "kind": "phrase",
+    "parts": [
+      "aero-plane",
+      "air-plane",
+      "plane"
+    ],
+    "ipa": "ˈeərəpleɪn",
+    "hint": "原文件把几种写法放在一起。英国常说 aeroplane；plane 里的 a 与不发音的 e 搭档，读 /eɪ/。",
+    "say": "aeroplane. airplane. plane."
+  },
+  "coach": {
+    "kind": "blend",
+    "parts": [
+      "c",
+      "oa",
+      "ch"
+    ],
+    "ipa": "kəʊtʃ",
+    "hint": "oa 一起发 /əʊ/，ch 一起发 /tʃ/；把三组声音连起来。"
+  },
+  "boat": {
+    "kind": "blend",
+    "parts": [
+      "b",
+      "oa",
+      "t"
+    ],
+    "ipa": "bəʊt",
+    "hint": "oa 是一组，发长音 /əʊ/；不是把 o 和 a 分开读。"
+  },
+  "cross": {
+    "kind": "blend",
+    "parts": [
+      "c",
+      "r",
+      "o",
+      "ss"
+    ],
+    "ipa": "krɒs",
+    "hint": "c、r 连起来，o 短读 /ɒ/；ss 只发一次 /s/。"
+  },
+  "crowded": {
+    "kind": "syllables",
+    "parts": [
+      "crowd",
+      "ed"
+    ],
+    "ipa": "ˈkraʊdɪd",
+    "hint": "这里 ow 读 /aʊ/，不是 show 的 /əʊ/；d 后的 ed 多一拍 /ɪd/。"
+  },
+  "crossroad": {
+    "kind": "syllables",
+    "parts": [
+      "cross",
+      "road"
+    ],
+    "ipa": "ˈkrɒsrəʊd",
+    "hint": "两个小词拼起来：cross 的 o 短读；road 的 oa 是一组，读 /əʊ/。"
+  },
+  "helicopter": {
+    "kind": "syllables",
+    "parts": [
+      "hel",
+      "i",
+      "cop",
+      "ter"
+    ],
+    "ipa": "ˈhelɪkɒptə",
+    "hint": "四拍，重读 hel；先慢慢拍节奏，再把后面三拍轻轻连上。"
+  },
+  "delay": {
+    "kind": "syllables",
+    "parts": [
+      "de",
+      "lay"
+    ],
+    "ipa": "dɪˈleɪ",
+    "hint": "两拍，重读 lay；ay 合起来发 /eɪ/，开头轻读。"
+  },
+  "lorry": {
+    "kind": "syllables",
+    "parts": [
+      "lor",
+      "ry"
+    ],
+    "ipa": "ˈlɒri",
+    "hint": "两拍，重读 lor，o 短读 /ɒ/；最后 y 发 /i/。"
+  },
+  "delayed": {
+    "kind": "syllables",
+    "parts": [
+      "de",
+      "layed"
+    ],
+    "ipa": "dɪˈleɪd",
+    "hint": "重读后半，ay 仍然发 /eɪ/；词尾 ed 发 /d/，不额外加一拍。"
+  },
+  "motorbike": {
+    "kind": "syllables",
+    "parts": [
+      "mo",
+      "tor",
+      "bike"
+    ],
+    "ipa": "ˈməʊtəbaɪk",
+    "hint": "先读 motor，再接 bike；开头 o 读 /əʊ/，bike 里 i 与不发音的 e 搭档，读 /aɪ/。"
+  },
+  "drive": {
+    "kind": "blend",
+    "parts": [
+      "d",
+      "r",
+      "i",
+      "v",
+      "e"
+    ],
+    "ipa": "draɪv",
+    "hint": "d、r 连起来，i 与末尾不发音的 e 搭档，读 /aɪ/。"
+  },
+  "ship": {
+    "kind": "blend",
+    "parts": [
+      "sh",
+      "i",
+      "p"
+    ],
+    "ipa": "ʃɪp",
+    "hint": "sh 是一组，发 /ʃ/；i 短读 /ɪ/，再轻轻接上 p。"
+  },
+  "driver": {
+    "kind": "syllables",
+    "parts": [
+      "driv",
+      "er"
+    ],
+    "ipa": "ˈdraɪvə",
+    "hint": "两拍，重读前面，i 仍读 /aɪ/；词尾 er 在英音里轻读 /ə/。"
+  },
+  "taxi": {
+    "kind": "syllables",
+    "parts": [
+      "tax",
+      "i"
+    ],
+    "ipa": "ˈtæksi",
+    "hint": "两拍，重读 tax；x 一个字母带来 /k/ 和 /s/ 两个声音，最后 i 读 /i/。"
+  },
+  "driving licence": {
+    "kind": "phrase",
+    "parts": [
+      "driv-ing",
+      "li-cence"
+    ],
+    "ipa": "ˈdraɪvɪŋ ˈlaɪsəns",
+    "hint": "分两词听，两个词中第一个 i 都读 /aɪ/；licence 两个 c 在这里都发 /s/。这是英式拼写。"
+  },
+  "train": {
+    "kind": "blend",
+    "parts": [
+      "t",
+      "r",
+      "ai",
+      "n"
+    ],
+    "ipa": "treɪn",
+    "hint": "ai 合起来发 /eɪ/；t、r 顺着连起来，不在中间加元音。"
+  },
+  "would rather": {
+    "kind": "phrase",
+    "parts": [
+      "w-ould",
+      "ra-ther"
+    ],
+    "ipa": "wʊd ˈrɑːðə",
+    "hint": "would 的 l 不发音，oul 读 /ʊ/；rather 的 th 要舌尖轻碰齿间、有声地发 /ð/。"
+  }
+}
