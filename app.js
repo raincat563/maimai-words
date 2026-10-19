@@ -247,7 +247,7 @@
     const [dataResult, phonicsResult, audioResult] = await Promise.allSettled([
       fetch('./data/weeks.json', { cache: 'no-cache' }).then(r => { if (!r.ok) throw Error('词表读取失败'); return r.json(); }).then(validateData),
       fetch('./data/phonics.json').then(r => { if (!r.ok) throw Error('拼读提示读取失败'); return r.json(); }),
-      fetch('./data/audio.json').then(r => { if (!r.ok) throw Error('英音音频目录读取失败'); return r.json(); })
+      fetch('./data/audio.json?v=3ada842', { cache: 'no-cache' }).then(r => { if (!r.ok) throw Error('英音音频目录读取失败'); return r.json(); })
     ]);
     if (dataResult.status === 'fulfilled') {
       published = dataResult.value;
