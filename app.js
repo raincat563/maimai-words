@@ -115,23 +115,48 @@
     colorWord(button.querySelector('.english'), word.en, Object.hasOwn(phonics, key) ? phonics[key] : null);
     speak();
   }
-  function britishVoice() {
+  function speechVoice() {
     if (!('speechSynthesis' in window)) return null;
-    return speechSynthesis.getVoices().filter(v => /^en-gb$/i.test(v.lang.replace('_', '-'))).sort((a, b) => Number(b.localService) - Number(a.localService))[0] || null;
+    const voices = speechSynthesis.getVoices();
+    const british = voices.filter(v => /^en-(?:gb|uk)(?:-|$)/i.test(v.lang.replaceAll('_', '-')))
+      .sort((a, b) => Number(b.localService) - Number(a.localService))[0];
+    if (british) return { voice: british, isBritish: true };
+    const english = voices.filter(v => /^en(?:[-_]|$)/i.test(v.lang))
+      .sort((a, b) => Number(b.localService) - Number(a.localService))[0];
+    return english ? { voice: english, isBritish: false } : null;
+  }
+  function waitForSpeechVoice() {
+    const current = speechVoice();
+    if (current || !('speechSynthesis' in window)) return Promise.resolve(current);
+    return new Promise(resolve => {
+      let settled = false;
+      const finish = () => {
+        if (settled) return;
+        settled = true;
+        clearTimeout(timer);
+        speechSynthesis.removeEventListener('voiceschanged', finish);
+        resolve(speechVoice());
+      };
+      const timer = setTimeout(finish, 1800);
+      speechSynthesis.addEventListener('voiceschanged', finish);
+    });
   }
   function voiceStatus(text) { $('#voice-status').textContent = text; $('#voice-status').hidden = !text; }
-  function speak() {
+  async function speak() {
     if (!activeWord) return;
-    const voice = britishVoice();
-    if (!voice) { voiceStatus('此设备尚无可用英音。请在系统语音设置下载 English (UK)，然后再点单词。'); return; }
+    const token = ++speechGeneration;
+    if (!('speechSynthesis' in window)) { voiceStatus('此浏览器无法播放语音，请换用 Chrome 或系统浏览器。'); return; }
+    speechSynthesis.cancel();
+    const selection = await waitForSpeechVoice();
+    if (token !== speechGeneration || !activeWord) return;
+    if (!selection) { voiceStatus('设备没有可用的英语语音。请在系统“文字转语音”设置中安装英语语音，再试一次。'); return; }
     const entry = Object.hasOwn(phonics, activeWord.en.toLowerCase().trim()) ? phonics[activeWord.en.toLowerCase().trim()] : null;
-    const token = ++speechGeneration; speechSynthesis.cancel();
     const u = new SpeechSynthesisUtterance(entry?.say || activeWord.en);
-    activeUtterance = u; u.voice = voice; u.lang = 'en-GB'; u.rate = 1; u.pitch = 1;
-    voiceStatus('');
+    activeUtterance = u; u.voice = selection.voice; u.lang = selection.voice.lang || 'en-GB'; u.rate = 1; u.pitch = 1;
+    voiceStatus(selection.isBritish ? '' : '设备没有英音，正在播放可用的英语发音；下载 English (UK) 语音可切换为英音。');
     u.onstart = () => { if (token !== speechGeneration) return; anchor?.classList.add('speaking'); };
     u.onend = () => { if (token !== speechGeneration) return; anchor?.classList.remove('speaking'); activeUtterance = null; };
-    u.onerror = e => { if (token !== speechGeneration || ['canceled', 'interrupted'].includes(e.error)) return; anchor?.classList.remove('speaking'); activeUtterance = null; voiceStatus('英音暂时没能播放，请检查设备声音与网络，再点一次单词。'); };
+    u.onerror = e => { if (token !== speechGeneration || ['canceled', 'interrupted'].includes(e.error)) return; anchor?.classList.remove('speaking'); activeUtterance = null; voiceStatus('设备语音暂时没能播放，请检查语音设置和设备音量，再点一次单词。'); };
     speechSynthesis.speak(u);
   }
   function showImport() {
@@ -192,7 +217,7 @@
     $('#backup').onclick = backup;
     $('#week-select').onchange = e => { selected = e.target.value; render(); try { localStorage.setItem(SELECTION, selected); } catch (_) {} };
     document.addEventListener('keydown', e => { if (e.key === 'Escape') clearActiveWord(); });
-    if ('speechSynthesis' in window) { speechSynthesis.getVoices(); speechSynthesis.addEventListener('voiceschanged', () => { if (activeWord && !activeUtterance && britishVoice()) voiceStatus('英式语音已就绪，再点单词即可播放。'); }); }
+    if ('speechSynthesis' in window) { speechSynthesis.getVoices(); speechSynthesis.addEventListener('voiceschanged', () => { if (activeWord && !activeUtterance && speechVoice()) voiceStatus('英语语音已就绪，再点单词即可播放。'); }); }
     readLocal();
     const [dataResult, phonicsResult] = await Promise.allSettled([
       fetch('./data/weeks.json', { cache: 'no-cache' }).then(r => { if (!r.ok) throw Error('词表读取失败'); return r.json(); }).then(validateData),
