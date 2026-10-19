@@ -7,7 +7,8 @@
   const icon = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m11 5-5 4H3v6h3l5 4V5Z"/><path d="M15 8a6 6 0 0 1 0 8m3-11a10 10 0 0 1 0 14"/></svg>';
   let published = [], local = [], weeks = [], phonics = {};
   let selected = '', activeWord = null, anchor = null, pending = null;
-  let toastTimer, importGeneration = 0, speechGeneration = 0, activeUtterance = null;
+  let toastTimer, importGeneration = 0, speechGeneration = 0, activeUtterance = null, activeAudio = null;
+  let audioFiles = {};
   let storageReadable = true;
   const count = week => week.rows.reduce((n, row) => n + row.length, 0);
   const signature = week => JSON.stringify(week.rows.map(row => row.map(({ en, zh }) => [en, zh])));
@@ -80,6 +81,7 @@
   }
   function clearActiveWord() {
     speechGeneration++; if ('speechSynthesis' in window) speechSynthesis.cancel();
+    if (activeAudio) { activeAudio.pause(); activeAudio.currentTime = 0; activeAudio = null; }
     if (anchor) {
       anchor.setAttribute('aria-pressed', 'false'); anchor.classList.remove('speaking');
       anchor.querySelector('.english').textContent = activeWord.en;
@@ -142,21 +144,44 @@
     });
   }
   function voiceStatus(text) { $('#voice-status').textContent = text; $('#voice-status').hidden = !text; }
+  function playAudioFile(path, token) {
+    const audio = new Audio('./' + path);
+    activeAudio = audio;
+    audio.onplay = () => { if (token === speechGeneration) anchor?.classList.add('speaking'); };
+    audio.onended = () => { if (token === speechGeneration) { anchor?.classList.remove('speaking'); activeAudio = null; } };
+    audio.onerror = () => { if (token === speechGeneration) { anchor?.classList.remove('speaking'); activeAudio = null; voiceStatus('网页英音没有加载成功，请刷新页面后再试。'); } };
+    voiceStatus('');
+    audio.play().catch(() => { if (token === speechGeneration) { activeAudio = null; voiceStatus('网页英音没有加载成功，请检查网络后再试。'); } });
+  }
   async function speak() {
     if (!activeWord) return;
     const token = ++speechGeneration;
-    if (!('speechSynthesis' in window)) { voiceStatus('此浏览器无法播放语音，请换用 Chrome 或系统浏览器。'); return; }
+    const key = activeWord.en.toLowerCase().trim();
+    const currentVoice = speechVoice();
+    if (currentVoice?.isBritish) { playWithVoice(currentVoice, token); return; }
+    if (audioFiles[key]) { playAudioFile(audioFiles[key], token); return; }
+    if (!('speechSynthesis' in window)) { voiceStatus('这个词的英音音频还没有准备好，请联系我更新词表。'); return; }
     speechSynthesis.cancel();
     const selection = await waitForSpeechVoice();
     if (token !== speechGeneration || !activeWord) return;
-    if (!selection) { voiceStatus('设备没有可用的英语语音。请在系统“文字转语音”设置中安装英语语音，再试一次。'); return; }
+    if (!selection) { voiceStatus('这个词没有网页英音，设备也没有英语语音；请联系我补充发音。'); return; }
+    playWithVoice(selection, token);
+  }
+  function playWithVoice(selection, token) {
+    if (!activeWord) return;
     const entry = Object.hasOwn(phonics, activeWord.en.toLowerCase().trim()) ? phonics[activeWord.en.toLowerCase().trim()] : null;
     const u = new SpeechSynthesisUtterance(entry?.say || activeWord.en);
     activeUtterance = u; u.voice = selection.voice; u.lang = selection.voice.lang || 'en-GB'; u.rate = 1; u.pitch = 1;
-    voiceStatus(selection.isBritish ? '' : '设备没有英音，正在播放可用的英语发音；下载 English (UK) 语音可切换为英音。');
+    voiceStatus(selection.isBritish ? '' : '正在使用设备提供的英语发音。');
     u.onstart = () => { if (token !== speechGeneration) return; anchor?.classList.add('speaking'); };
     u.onend = () => { if (token !== speechGeneration) return; anchor?.classList.remove('speaking'); activeUtterance = null; };
-    u.onerror = e => { if (token !== speechGeneration || ['canceled', 'interrupted'].includes(e.error)) return; anchor?.classList.remove('speaking'); activeUtterance = null; voiceStatus('设备语音暂时没能播放，请检查语音设置和设备音量，再点一次单词。'); };
+    u.onerror = e => {
+      if (token !== speechGeneration || ['canceled', 'interrupted'].includes(e.error)) return;
+      anchor?.classList.remove('speaking'); activeUtterance = null;
+      const key = activeWord?.en.toLowerCase().trim();
+      if (key && audioFiles[key]) playAudioFile(audioFiles[key], token);
+      else voiceStatus('设备语音暂时没能播放，请检查语音设置和设备音量，再点一次单词。');
+    };
     speechSynthesis.speak(u);
   }
   function showImport() {
@@ -219,9 +244,10 @@
     document.addEventListener('keydown', e => { if (e.key === 'Escape') clearActiveWord(); });
     if ('speechSynthesis' in window) { speechSynthesis.getVoices(); speechSynthesis.addEventListener('voiceschanged', () => { if (activeWord && !activeUtterance && speechVoice()) voiceStatus('英语语音已就绪，再点单词即可播放。'); }); }
     readLocal();
-    const [dataResult, phonicsResult] = await Promise.allSettled([
+    const [dataResult, phonicsResult, audioResult] = await Promise.allSettled([
       fetch('./data/weeks.json', { cache: 'no-cache' }).then(r => { if (!r.ok) throw Error('词表读取失败'); return r.json(); }).then(validateData),
-      fetch('./data/phonics.json').then(r => { if (!r.ok) throw Error('拼读提示读取失败'); return r.json(); })
+      fetch('./data/phonics.json').then(r => { if (!r.ok) throw Error('拼读提示读取失败'); return r.json(); }),
+      fetch('./data/audio.json').then(r => { if (!r.ok) throw Error('英音音频目录读取失败'); return r.json(); })
     ]);
     if (dataResult.status === 'fulfilled') {
       published = dataResult.value;
@@ -235,6 +261,7 @@
     else notice('网站词表暂时没有加载成功，请刷新重试。已有的本地词表仍可使用，也可以导入备份。');
     if (phonicsResult.status === 'fulfilled') phonics = phonicsResult.value;
     else { if (dataResult.status === 'fulfilled' && storageReadable) notice('拼读提示暂时没有加载成功，请刷新重试；词表和设备英音仍可使用。'); }
+    if (audioResult.status === 'fulfilled') audioFiles = audioResult.value;
     // Local IDs cannot mask the website's published collections.
     const publishedIds = new Set(published.map(w => w.id));
     local = local.map(w => publishedIds.has(w.id) ? { ...w, id: uid() } : w);
