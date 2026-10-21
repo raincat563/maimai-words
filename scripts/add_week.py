@@ -66,7 +66,7 @@ def parse_docx(path):
     return rows, skipped
 
 
-def append_week(path, catalogue, title, day, identity=None):
+def append_week(path, catalogue, title, day, identity=None, child='maimai'):
     date.fromisoformat(day)
     if not title.strip() or len(title) > 60:
         raise ValueError('标题需要 1–60 个字')
@@ -74,7 +74,9 @@ def append_week(path, catalogue, title, day, identity=None):
     data = json.loads(catalogue.read_text()) if catalogue.exists() else {'version': 1, 'weeks': []}
     if data.get('version') != 1 or not isinstance(data.get('weeks'), list):
         raise ValueError('现有词表格式不正确，未修改文件')
-    if any(week['rows'] == rows for week in data['weeks']):
+    if child not in ('maimai', 'xiaoyu'):
+        raise ValueError('孩子编号只能是 maimai 或 xiaoyu')
+    if any(week.get('child', 'maimai') == child and week['rows'] == rows for week in data['weeks']):
         raise ValueError('相同内容的词表已经存在，未重复添加')
     identities = {week['id'] for week in data['weeks']}
     identity = identity or day
@@ -82,7 +84,7 @@ def append_week(path, catalogue, title, day, identity=None):
         raise ValueError('该编号已存在，请指定不同的 --id；旧词表不会被覆盖')
     if len(data['weeks']) >= 100 or sum(sum(map(len, w['rows'])) for w in data['weeks']) + sum(map(len, rows)) > 8000:
         raise ValueError('目前最多支持 100 周、合计 8,000 项，请先归档')
-    week = {'id': identity, 'title': title.strip(), 'date': day, 'source': path.name, 'rows': rows}
+    week = {'id': identity, 'child': child, 'title': title.strip(), 'date': day, 'source': path.name, 'rows': rows}
     data['weeks'].append(week)
     data['weeks'].sort(key=lambda w: w['date'], reverse=True)
     # Atomic replacement: parsing/validation failures never truncate the catalogue.
@@ -98,10 +100,11 @@ def main():
     parser.add_argument('--title', required=True)
     parser.add_argument('--date', required=True, help='YYYY-MM-DD，中国当地日期')
     parser.add_argument('--id', help='默认用日期，同日多份时指定不同编号')
+    parser.add_argument('--child', choices=('maimai', 'xiaoyu'), default='maimai', help='词表所属孩子，默认 maimai')
     args = parser.parse_args()
     catalogue = ROOT / 'data' / 'weeks.json'
     try:
-        week, skipped = append_week(args.file, catalogue, args.title, args.date, args.id)
+        week, skipped = append_week(args.file, catalogue, args.title, args.date, args.id, args.child)
     except (ValueError, OSError, KeyError, BadZipFile, ET.ParseError) as error:
         sys.exit(f'未导入：{error}')
     print(f'已新增 {week["title"]}：{sum(map(len, week["rows"]))} 项；旧词表保留。')

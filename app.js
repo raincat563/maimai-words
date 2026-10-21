@@ -4,14 +4,15 @@
   const STORE = 'maimai-garden-collections-v2';
   const SELECTION = 'maimai-garden-selected-v2';
   const LATEST = 'maimai-garden-latest-published-v2';
+  const CHILDREN = { maimai: '麦麦', xiaoyu: '小屿' };
   const icon = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m11 5-5 4H3v6h3l5 4V5Z"/><path d="M15 8a6 6 0 0 1 0 8m3-11a10 10 0 0 1 0 14"/></svg>';
   let published = [], local = [], weeks = [], phonics = {};
-  let selected = '', activeWord = null, anchor = null, pending = null;
+  let selected = '', child = 'maimai', activeWord = null, anchor = null, pending = null;
   let toastTimer, importGeneration = 0, speechGeneration = 0, activeUtterance = null, activeAudio = null;
   let audioFiles = {};
   let storageReadable = true;
   const count = week => week.rows.reduce((n, row) => n + row.length, 0);
-  const signature = week => JSON.stringify(week.rows.map(row => row.map(({ en, zh }) => [en, zh])));
+  const signature = week => JSON.stringify([week.child || 'maimai', week.rows.map(row => row.map(({ en, zh }) => [en, zh]))]);
   const today = () => new Date().toLocaleDateString('sv-SE', { timeZone: 'Asia/Shanghai' });
   const uid = () => 'local-' + (crypto.randomUUID ? crypto.randomUUID() : Date.now() + '-' + Math.random().toString(36).slice(2));
   function el(tag, cls, text) { const n = document.createElement(tag); if (cls) n.className = cls; if (text !== undefined) n.textContent = text; return n; }
@@ -34,7 +35,9 @@
         });
       });
       if (rows.flat().length > 2000) throw Error('每周词表最多支持 2,000 项。');
-      return { id: week.id, title: week.title.trim(), date: week.date, source: typeof week.source === 'string' ? week.source.slice(0, 150) : '', rows };
+      const childId = week.child || 'maimai';
+      if (!Object.hasOwn(CHILDREN, childId)) throw Error('词表所属孩子不正确。');
+      return { id: week.id, child: childId, title: week.title.trim(), date: week.date, source: typeof week.source === 'string' ? week.source.slice(0, 150) : '', rows };
     });
   }
   function readLocal() {
@@ -48,8 +51,8 @@
     }
   }
   function rebuild() {
-    const known = new Set(published.map(signature));
-    weeks = [...local.filter(w => !known.has(signature(w))).map(w => ({ ...w, isLocal: true })), ...published];
+    const known = new Set(published.filter(w => w.child === child).map(signature));
+    weeks = [...local.filter(w => w.child === child && !known.has(signature(w))).map(w => ({ ...w, isLocal: true })), ...published.filter(w => w.child === child)];
     weeks.sort((a, b) => b.date.localeCompare(a.date));
     if (!weeks.some(w => w.id === selected)) selected = weeks[0]?.id || '';
     const select = $('#week-select'); select.replaceChildren();
@@ -61,7 +64,7 @@
     clearActiveWord();
     const week = weeks.find(w => w.id === selected), list = $('#word-list');
     list.replaceChildren(); list.setAttribute('aria-busy', 'false');
-    if (!week) { list.append(el('p', 'loading', '还没有词表，导入第一周的单词吧。')); return; }
+    if (!week) { $('#word-count').textContent = '— 项'; $('#local-tag').hidden = true; $('#list-date').textContent = ''; list.append(el('p', 'loading', `${CHILDREN[child]}还没有词表，导入第一周的单词吧。`)); return; }
     $('#word-count').textContent = count(week) + ' 项'; $('#local-tag').hidden = !week.isLocal;
     $('#list-date').textContent = week.isLocal ? '仅此浏览器' : '已发布 · ' + week.date.replaceAll('-', '.');
     let i = 0;
@@ -203,6 +206,7 @@
         candidates = [{ id: uid(), title: file.name.replace(/\.docx$/i, '').slice(0, 60) || '新一周单词', date: today(), source: file.name, rows: parsed.rows }];
       }
       if (generation !== importGeneration || !$('#import-dialog').open) return;
+      candidates = candidates.map(w => ({ ...w, child }));
       const known = new Set(weeks.map(signature));
       candidates = candidates.filter(w => { const s = signature(w); if (known.has(s)) return false; known.add(s); return true; });
       if (!candidates.length) throw Error('这些词表已经在花园里了，不用重复导入。');
@@ -219,7 +223,7 @@
     if (!storageReadable) { importError('无法安全读取已有本地词表，暂不写入。请先备份或换普通浏览模式。'); return; }
     const name = $('#import-name').value.trim();
     if (!name) { importError('先给这一周起个名字吧。'); return; }
-    const additions = pending.map(w => ({ ...w, id: uid(), title: pending.length === 1 ? name : w.title }));
+    const additions = pending.map(w => ({ ...w, child, id: uid(), title: pending.length === 1 ? name : w.title }));
     const next = [...additions, ...local];
     try {
       validateData({ version: 1, weeks: [...published, ...next] });
@@ -227,11 +231,12 @@
     } catch (error) { importError('没有保存成功，原有词表仍保留。' + (error.name === 'QuotaExceededError' ? '浏览器空间不足，请先备份并清理其他网站数据。' : error.message)); return; }
     local = next; selected = additions[0].id; pending = null; $('#import-dialog').close(); rebuild();
     try { localStorage.setItem(SELECTION, selected); } catch (_) { /* Collection itself has already been saved. */ }
-    toast('新词表已加入此设备，旧词表都还在。');
+    toast(`${CHILDREN[child]}的新词表已加入此设备，旧词表都还在。`);
   }
   function backup() {
-    const blob = new Blob([JSON.stringify({ version: 1, weeks: weeks.map(({ isLocal, ...w }) => w) }, null, 2)], { type: 'application/json' });
-    const a = el('a'); const url = URL.createObjectURL(blob); a.href = url; a.download = '麦麦的词表备份-' + today() + '.json'; a.click(); setTimeout(() => URL.revokeObjectURL(url), 1000);
+    const ownWeeks = [...local.filter(w => w.child === child), ...published.filter(w => w.child === child)];
+    const blob = new Blob([JSON.stringify({ version: 1, weeks: ownWeeks.map(({ isLocal, ...w }) => w) }, null, 2)], { type: 'application/json' });
+    const a = el('a'); const url = URL.createObjectURL(blob); a.href = url; a.download = `${CHILDREN[child]}的词表备份-${today()}.json`; a.click(); setTimeout(() => URL.revokeObjectURL(url), 1000);
   }
   async function init() {
     $('#help-open').onclick = () => { clearActiveWord(); $('#help-dialog').showModal(); };
@@ -240,10 +245,14 @@
     $('[data-close="help-dialog"]').onclick = () => $('#help-dialog').close();
     $('#import-dialog').addEventListener('cancel', () => { importGeneration++; pending = null; });
     $('#backup').onclick = backup;
+    $('#child-select').onchange = e => { child = e.target.value; selected = ''; rebuild(); try { localStorage.setItem('maimai-garden-child-v1', child); } catch (_) {} };
     $('#week-select').onchange = e => { selected = e.target.value; render(); try { localStorage.setItem(SELECTION, selected); } catch (_) {} };
     document.addEventListener('keydown', e => { if (e.key === 'Escape') clearActiveWord(); });
     if ('speechSynthesis' in window) { speechSynthesis.getVoices(); speechSynthesis.addEventListener('voiceschanged', () => { if (activeWord && !activeUtterance && speechVoice()) voiceStatus('英语语音已就绪，再点单词即可播放。'); }); }
     readLocal();
+    try { child = localStorage.getItem('maimai-garden-child-v1') || 'maimai'; } catch (_) {}
+    if (!Object.hasOwn(CHILDREN, child)) child = 'maimai';
+    $('#child-select').value = child;
     const [dataResult, phonicsResult, audioResult] = await Promise.allSettled([
       fetch('./data/weeks.json', { cache: 'no-cache' }).then(r => { if (!r.ok) throw Error('词表读取失败'); return r.json(); }).then(validateData),
       fetch('./data/phonics.json').then(r => { if (!r.ok) throw Error('拼读提示读取失败'); return r.json(); }),
