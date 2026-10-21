@@ -207,10 +207,21 @@
     pending = null; $('#import-preview').hidden = true; $('#import-error').hidden = true;
     if (!file) return;
     try {
-      if (file.size > 5 * 1024 * 1024) throw Error('文件超过 5 MB，请精简文件后再导入。');
+      const isPdf = /\.pdf$/i.test(file.name);
+      if (file.size > (isPdf ? 10 : 5) * 1024 * 1024) throw Error(`文件超过 ${isPdf ? 10 : 5} MB，请精简文件后再导入。`);
       let candidates, warning = '';
       if (/\.json$/i.test(file.name)) candidates = validateData(JSON.parse(await file.text()));
-      else {
+      else if (isPdf) {
+        const parsed = await MaimaiPdf.parseFile(file);
+        const title = file.name.replace(/\.pdf$/i, '').slice(0, 60) || '新一周单词';
+        candidates = [{ id: uid(), title, date: today(), source: file.name, rows: parsed.rows, sectionHeaders: parsed.sectionHeaders }];
+        const summaries = parsed.sectionHeaders.map((section, i) => {
+          const end = parsed.sectionHeaders[i + 1]?.beforeRow ?? parsed.rows.length;
+          const words = parsed.rows.slice(section.beforeRow, end).reduce((sum, row) => sum + row.length, 0);
+          return `${section.title} ${words} 项`;
+        });
+        warning = `识别到${summaries.join('、')}；只提取词汇区内容。`;
+      } else {
         const parsed = await MaimaiDocx.parseFile(file); warning = parsed.warning;
         candidates = [{ id: uid(), title: file.name.replace(/\.docx$/i, '').slice(0, 60) || '新一周单词', date: today(), source: file.name, rows: parsed.rows }];
       }
@@ -222,7 +233,7 @@
       pending = candidates;
       $('#import-name').value = candidates[0].title; $('#import-name').disabled = candidates.length > 1;
       const preview = $('#preview-list'); preview.replaceChildren();
-      candidates.flatMap(w => w.rows.flat()).slice(0, 6).forEach(w => { const row = el('div', 'preview-row'); row.append(el('span', '', w.en), el('span', '', w.zh)); preview.append(row); });
+      candidates.flatMap(w => w.rows.flat()).slice(0, 10).forEach(w => { const row = el('div', 'preview-row'); row.append(el('span', '', w.en), el('span', '', w.zh)); preview.append(row); });
       $('#preview-count').textContent = `将新增 ${candidates.length} 份词表，共 ${candidates.reduce((n, w) => n + count(w), 0)} 项，已有词表不会被覆盖。` + (warning ? ' ' + warning : '');
       $('#import-preview').hidden = false;
     } catch (error) { if (generation === importGeneration) importError(error instanceof SyntaxError ? '备份文件不是有效的 JSON，请使用本站导出的词表备份。' : error.message); }

@@ -3,10 +3,16 @@
   'use strict';
   const NS = 'http://schemas.openxmlformats.org/wordprocessingml/2006/main';
   const MAX_XML = 4 * 1024 * 1024;
+  const vocabHeading = /^(核心词汇|认知词汇|认读词汇|重点词汇|重点单词|核心单词|词汇表|单词表|vocabulary|core vocabulary|key vocabulary|recognition vocabulary|word list)$/i;
+  const stopHeading = /^(语法|语法知识|grammar|homework|作业|练习|练习题|reading|writing|课文|句型|sentence patterns?)/i;
   const clean = text => text.replace(/\s+/g, ' ').trim();
   const textOf = node => clean(Array.from(node.getElementsByTagNameNS(NS, 't'), n => n.textContent).join(''));
   const children = (node, name) => Array.from(node.children).filter(n => n.namespaceURI === NS && n.localName === name);
   const isHeader = cells => cells.every((s, i) => (i % 2 ? /^(中文|释义|意思|meaning|chinese)$/i : /^(英文|单词|english|word|words)$/i).test(s));
+  const looksLikeVocabulary = row => row.every(({ en }) => {
+    const text = en.trim();
+    return text.length <= 48 && text.split(/\s+/).length <= 4 && !/[.!?]/.test(text) && !(/^(i|you|he|she|it|we|they)\s+(am|are|is|was|were|have|has|do|does|did|can|will|would)\b/i.test(text));
+  });
 
   function pairs(cells, rowNumber) {
     if (cells.every(s => !s)) return [];
@@ -33,7 +39,15 @@
     const rows = [];
     let rowNumber = 0;
     let plainSkipped = false;
-    for (const block of body.children) {
+    const blocks = Array.from(body.children);
+    const isVocabHeading = block => block.localName === 'p' && vocabHeading.test(textOf(block).replace(/[【】\[\]（）()：:]/g, '').trim());
+    const isStopHeading = block => block.localName === 'p' && stopHeading.test(textOf(block).trim());
+    const hasVocabularySections = blocks.some(isVocabHeading);
+    let inVocabularySection = !hasVocabularySections;
+    for (const block of blocks) {
+      if (isVocabHeading(block)) { inVocabularySection = true; continue; }
+      if (isStopHeading(block)) { inVocabularySection = false; continue; }
+      if (!inVocabularySection) continue;
       if (block.localName === 'tbl') {
         for (const tr of children(block, 'tr')) {
           rowNumber++;
@@ -41,21 +55,33 @@
           if (cells.some(c => c.getElementsByTagNameNS(NS, 'gridSpan').length || c.getElementsByTagNameNS(NS, 'vMerge').length || c.getElementsByTagNameNS(NS, 'tbl').length)) {
             throw Error('暂不支持合并单元格或嵌套表格，请改为普通的“英文｜中文”表格后导入。');
           }
-          const row = pairs(cells.map(textOf), rowNumber);
-          if (row.length) rows.push(row);
+          let row;
+          try { row = pairs(cells.map(textOf), rowNumber); }
+          catch (error) { if (hasVocabularySections) throw error; plainSkipped = true; continue; }
+          if (row.length) {
+            const vocabularyRow = hasVocabularySections ? row : row.filter(word => looksLikeVocabulary([word]));
+            if (vocabularyRow.length !== row.length) plainSkipped = true;
+            if (vocabularyRow.length) rows.push(vocabularyRow);
+          }
         }
       } else if (block.localName === 'p') {
         const raw = Array.from(block.getElementsByTagNameNS(NS, 'r')).map(r => Array.from(r.children).map(n => n.localName === 'tab' ? '\t' : n.localName === 't' ? n.textContent : '').join('')).join('');
         const cells = raw.split('\t').map(clean);
         if (cells.length > 1) {
-          const row = pairs(cells, ++rowNumber);
-          if (row.length) rows.push(row);
+          let row;
+          try { row = pairs(cells, ++rowNumber); }
+          catch (error) { if (hasVocabularySections) throw error; plainSkipped = true; continue; }
+          if (row.length) {
+            const vocabularyRow = hasVocabularySections ? row : row.filter(word => looksLikeVocabulary([word]));
+            if (vocabularyRow.length !== row.length) plainSkipped = true;
+            if (vocabularyRow.length) rows.push(vocabularyRow);
+          }
         } else if (clean(raw)) plainSkipped = true;
       }
     }
     if (!rows.length) throw Error('没有找到单词表。请使用“英文｜中文”的表格，或用 Tab 分隔英文和中文。');
     if (rows.length > 1000 || rows.flat().length > 2000) throw Error('一份文件最多支持 2,000 项，请按周拆分。');
-    return { rows, warning: plainSkipped ? '已读取表格；表格外的标题或普通段落不作为单词导入。请核对下方预览。' : '' };
+    return { rows, warning: plainSkipped ? '已忽略词汇标题以外或不符合词条格式的内容，请核对下方预览。' : '' };
   }
 
   async function parseFile(file) {
