@@ -1,9 +1,9 @@
 /* Extract explicit vocabulary tables from text-based PDFs, entirely in the browser. */
 (() => {
   'use strict';
-  const vocabularyHeading = /^(核心词汇|认知词汇|认读词汇|重点词汇|重点单词|核心单词|词汇表|单词表|单词|vocabulary|core vocabulary|key vocabulary|recognition vocabulary|word list)$/i;
+  const vocabularyHeading = /^(核心词汇|认知词汇|认读词汇|重点词汇|重点单词|核心单词|词汇表|词汇清单|单词表|单词清单|单词|vocabulary|vocabulary list|core vocabulary|key vocabulary|key words|recognition vocabulary|word list|word bank|new words)$/i;
   const stopHeading = /^(?:重点语法|语法知识|语法|作业|练习题?|课文|句型|句子默写|短文翻译|口语(?:\/写作)?|写作|grammar|homework|reading|writing|sentence patterns?)$/i;
-  const headerCell = /^(汉语含义|中文含义|英语单词|英文单词|单词|释义|meaning|chinese|english|word|vocabulary)$/i;
+  const headerCell = /^(汉语含义|汉语意思|汉语释义|中文含义|中文释义|中文解释|英语单词|英文单词|中文|汉语|英文|英语|单词|词汇|词义|释义|meaning|translation|chinese(?:\s+(?:meaning|translation))?|english(?:\s+word)?|word|vocabulary)$/i;
   const hasChinese = value => /[\u3400-\u9fff]/.test(value);
   const clean = value => value.replace(/[\u200b\ufeff]/g, '').replace(/\s+/g, ' ').trim();
   const cleanMeaning = value => clean(value).normalize('NFKC').replace(/\s*[（(](?:adj|adv|n|v|pron|prep|conj|num)(?:\.[^）)]*)?[）)]\s*/gi, ' ').trim();
@@ -36,7 +36,10 @@
   }
 
   function heading(text) {
-    const normalized = clean(text).normalize('NFKC').replace(/[【】\[\]（）()]/g, '').replace(/[：:]$/, '').trim();
+    const normalized = clean(text).normalize('NFKC')
+      .replace(/^\s*(?:第?[一二三四五六七八九十\d]+(?:部分|[、.．)）]))\s*/i, '')
+      .replace(/^(?:unit|lesson)\s*[\d. -]+/i, '').replace(/^\s*[:：-]\s*/, '')
+      .replace(/（[^）]*）|\([^)]*\)|\[[^\]]*\]/g, '').replace(/[【】\[\]（）()]/g, '').replace(/[：:]$/, '').trim();
     if (stopHeading.test(normalized)) return { stop: true };
     if (vocabularyHeading.test(normalized)) {
       if (/认知词汇/i.test(normalized)) return { title: '认知词汇' };

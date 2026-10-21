@@ -31,12 +31,22 @@ def parse_docx(path):
     def add(cells):
         if not any(cells):
             return
-        if all(re.fullmatch(r'中文|释义|意思|meaning|chinese' if i % 2 else r'英文|单词|english|word|words', s, re.I) for i, s in enumerate(cells)):
+        english_header = re.compile(r'英文|英语|英语单词|英文单词|词汇|单词|english(?:\s+word)?|word|words', re.I)
+        chinese_header = re.compile(r'中文|中文含义|中文释义|中文解释|汉语|汉语意思|汉语释义|释义|词义|意思|meaning|translation|chinese', re.I)
+        if len(cells) % 2 == 0 and all(
+            (english_header.fullmatch(cells[i]) and chinese_header.fullmatch(cells[i + 1]))
+            or (chinese_header.fullmatch(cells[i]) and english_header.fullmatch(cells[i + 1]))
+            for i in range(0, len(cells), 2)
+        ):
             return
         if len(cells) % 2 or len(cells) > 6:
             raise ValueError('每行需要 1–3 组“英文｜中文”')
         row = []
-        for en, zh in zip(cells[::2], cells[1::2]):
+        for first, second in zip(cells[::2], cells[1::2]):
+            first_has_chinese = re.search('[\u3400-\u9fff]', first)
+            second_has_chinese = re.search('[\u3400-\u9fff]', second)
+            en, zh = (second, first) if first_has_chinese and not second_has_chinese else (first, second)
+            en = re.sub(r'^(?:(?:\d+|[一二三四五六七八九十]+)[.、．)）]|[-•·])\s*', '', en).strip()
             if not en and not zh:
                 continue
             if not en or not zh or not re.search('[a-z]', en, re.I) or re.search('[\u3400-\u9fff]', en) or len(en) > 150 or len(zh) > 300:

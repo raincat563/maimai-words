@@ -3,14 +3,15 @@
   'use strict';
   const NS = 'http://schemas.openxmlformats.org/wordprocessingml/2006/main';
   const MAX_XML = 4 * 1024 * 1024;
-  const vocabHeading = /^(核心词汇|认知词汇|认读词汇|重点词汇|重点单词|核心单词|词汇表|单词表|vocabulary|core vocabulary|key vocabulary|recognition vocabulary|word list)$/i;
+  const vocabHeading = /^(核心词汇|认知词汇|认读词汇|重点词汇|重点单词|核心单词|词汇表|词汇清单|单词表|单词清单|vocabulary|vocabulary list|core vocabulary|key vocabulary|key words|recognition vocabulary|word list|word bank|new words)$/i;
   const stopHeading = /^(重点语法|语法|语法知识|grammar|homework|作业|练习|练习题|reading|writing|课文|句型|sentence patterns?)/i;
   const clean = text => text.replace(/\s+/g, ' ').trim();
+  const cleanEnglish = text => clean(text).replace(/^(?:(?:\d+|[一二三四五六七八九十]+)[.、．)）]|[-•·])\s*/, '');
   const textOf = node => clean(Array.from(node.getElementsByTagNameNS(NS, 't'), n => n.textContent).join(''));
   const children = (node, name) => Array.from(node.children).filter(n => n.namespaceURI === NS && n.localName === name);
   const isHeader = cells => {
-    const english = /^(英文|英语|英语单词|英文单词|单词|english|word|words)$/i;
-    const chinese = /^(中文|中文含义|汉语|汉语意思|释义|意思|meaning|chinese)$/i;
+    const english = /^(英文|英语|英语单词|英文单词|词汇|单词|english(?:\s+word)?|word|words)$/i;
+    const chinese = /^(中文|中文含义|中文释义|中文解释|汉语|汉语意思|汉语释义|释义|词义|意思|meaning|chinese(?:\s+(?:meaning|translation))?|translation)$/i;
     return cells.length > 0 && cells.length % 2 === 0 && cells.every((_, i) => i % 2 === 0
       ? (english.test(cells[i]) && chinese.test(cells[i + 1])) || (chinese.test(cells[i]) && english.test(cells[i + 1]))
       : true);
@@ -23,15 +24,16 @@
   function pairs(cells, rowNumber) {
     if (cells.every(s => !s)) return [];
     if (isHeader(cells)) return [];
-    if (cells.length % 2 || cells.length > 6) throw Error(`第 ${rowNumber} 行不是成对的“英文｜中文”，请检查表格。`);
+      if (cells.length % 2 || cells.length > 6) throw Error(`第 ${rowNumber} 行的中英文词条没有成对，请检查表格。`);
     const row = [];
     for (let i = 0; i < cells.length; i += 2) {
       const first = cells[i], second = cells[i + 1];
       const firstHasChinese = /[\u3400-\u9fff]/.test(first), secondHasChinese = /[\u3400-\u9fff]/.test(second);
-      const [en, zh] = firstHasChinese && !secondHasChinese ? [second, first] : [first, second];
+      const [rawEnglish, zh] = firstHasChinese && !secondHasChinese ? [second, first] : [first, second];
+      const en = cleanEnglish(rawEnglish);
       if (!en && !zh) continue;
       if (!en || !zh || !/[a-z]/i.test(en) || /[\u3400-\u9fff]/.test(en) || en.length > 150 || zh.length > 300) {
-        throw Error(`第 ${rowNumber} 行的英文或中文不完整，请使用“英文｜中文”的表格。`);
+        throw Error(`第 ${rowNumber} 行的英文或中文不完整，请检查这行的两列内容。`);
       }
       row.push({ en, zh });
     }
@@ -48,7 +50,10 @@
     let rowNumber = 0;
     let plainSkipped = false;
     const blocks = Array.from(body.children);
-    const normalizeHeading = block => textOf(block).replace(/^\s*[一二三四五六七八九十\d]+[、.．)）]\s*/, '').replace(/[【】\[\]（）()：:]/g, '').trim();
+    const normalizeHeading = block => textOf(block)
+      .replace(/^\s*(?:第?[一二三四五六七八九十\d]+(?:部分|[、.．)）]))\s*/i, '')
+      .replace(/^(?:unit|lesson)\s*[\d. -]+/i, '').replace(/^\s*[:：-]\s*/, '')
+      .replace(/（[^）]*）|\([^)]*\)|\[[^\]]*\]/g, '').replace(/[【】\[\]（）()：:]/g, '').trim();
     const isVocabHeading = block => block.localName === 'p' && vocabHeading.test(normalizeHeading(block));
     const isStopHeading = block => block.localName === 'p' && stopHeading.test(normalizeHeading(block));
     const hasVocabularySections = blocks.some(isVocabHeading);
@@ -62,7 +67,7 @@
           rowNumber++;
           const cells = children(tr, 'tc');
           if (cells.some(c => c.getElementsByTagNameNS(NS, 'gridSpan').length || c.getElementsByTagNameNS(NS, 'vMerge').length || c.getElementsByTagNameNS(NS, 'tbl').length)) {
-            throw Error('暂不支持合并单元格或嵌套表格，请改为普通的“英文｜中文”表格后导入。');
+            throw Error('暂不支持合并单元格或嵌套表格，请改为普通的两列中英表格后导入。');
           }
           let row;
           try { row = pairs(cells.map(textOf), rowNumber); }
@@ -88,7 +93,7 @@
         } else if (clean(raw)) plainSkipped = true;
       }
     }
-    if (!rows.length) throw Error('没有找到单词表。请使用“英文｜中文”的表格，或用 Tab 分隔英文和中文。');
+    if (!rows.length) throw Error('没有找到单词表。请使用两列“英文｜中文”或“中文｜英文”表格，也可用 Tab 分隔；旧版 .doc 和扫描图片请先转换为可编辑的 .docx。');
     if (rows.length > 1000 || rows.flat().length > 2000) throw Error('一份文件最多支持 2,000 项，请按周拆分。');
     return { rows, warning: plainSkipped ? '已忽略词汇标题以外或不符合词条格式的内容，请核对下方预览。' : '' };
   }
