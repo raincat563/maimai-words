@@ -23,9 +23,12 @@ MAIMAI_WEEK = next(week for week in SOURCE['weeks'] if week.get('child', 'maimai
 ROWS = [[('moon', '月亮'), ('boat', '小船')], [('ship', '船'), ('train', '火车')]]
 
 
-def docx_bytes(rows=ROWS, merge=False):
+def docx_bytes(rows=ROWS, merge=False, reverse=False, heading=None):
+    if reverse:
+        rows = [[('汉语意思', '英语单词')], *[[(zh, en) for en, zh in row] for row in rows]]
     table = ''.join('<w:tr>' + ''.join('<w:tc>' + ('<w:tcPr><w:gridSpan w:val="2"/></w:tcPr>' if merge else '') + '<w:p><w:r><w:t>' + escape(text) + '</w:t></w:r></w:p></w:tc>' for pair in row for text in pair) + '</w:tr>' for row in rows)
-    xml = '<?xml version="1.0"?><w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:body><w:tbl>' + table + '</w:tbl></w:body></w:document>'
+    title = '<w:p><w:r><w:t>' + escape(heading) + '</w:t></w:r></w:p>' if heading else ''
+    xml = '<?xml version="1.0"?><w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:body>' + title + '<w:tbl>' + table + '</w:tbl></w:body></w:document>'
     output = io.BytesIO()
     with ZipFile(output, 'w', ZIP_DEFLATED) as archive:
         archive.writestr('word/document.xml', xml)
@@ -333,6 +336,16 @@ class BrowserTests(unittest.TestCase):
         expect(self.page.locator('.word-card')).to_have_count(4)
         words = self.page.locator('.word-card .english').all_text_contents()
         self.assertEqual(words, ['moonlight', 'ship', 'train', 'star'])
+
+    def test_word_import_accepts_chinese_first_columns_and_numbered_headings(self):
+        self.load()
+        data = docx_bytes([[('in detail', '详细地'), ('in fact', '实际上')]], reverse=True, heading='一、核心词汇')
+        self.upload(data, 'Unit13-2 重点词汇表.docx')
+        expect(self.page.locator('#import-preview')).to_be_visible()
+        rows = self.page.locator('.preview-row').evaluate_all('nodes=>nodes.map(n=>[n.querySelectorAll("input")[0].value,n.querySelectorAll("input")[1].value])')
+        self.assertEqual(rows, [['in detail', '详细地'], ['in fact', '实际上']])
+        self.page.click('#import-confirm')
+        expect(self.page.locator('.word-card')).to_have_count(2)
 
     def test_new_published_week_opens_latest_and_keeps_history(self):
         self.load()
