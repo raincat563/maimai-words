@@ -1,14 +1,15 @@
 /* Extract explicit vocabulary tables from text-based PDFs, entirely in the browser. */
 (() => {
   'use strict';
-  const vocabularyHeading = /^(核心词汇|认知词汇|认读词汇|重点词汇|重点单词|核心单词|词汇表|单词表|vocabulary|core vocabulary|key vocabulary|recognition vocabulary|word list)$/i;
-  const stopHeading = /^(?:语法知识|语法|作业|练习题?|课文|句型|grammar\b|homework\b|reading\b|writing\b|sentence patterns?\b)/i;
+  const vocabularyHeading = /^(核心词汇|认知词汇|认读词汇|重点词汇|重点单词|核心单词|词汇表|单词表|单词|vocabulary|core vocabulary|key vocabulary|recognition vocabulary|word list)$/i;
+  const stopHeading = /^(?:语法知识|语法|作业|练习题?|课文|句型|句子默写|短文翻译|口语(?:\/写作)?|写作|grammar|homework|reading|writing|sentence patterns?)$/i;
   const headerCell = /^(汉语含义|中文含义|英语单词|英文单词|单词|释义|meaning|chinese|english|word|vocabulary)$/i;
   const hasChinese = value => /[\u3400-\u9fff]/.test(value);
   const clean = value => value.replace(/[\u200b\ufeff]/g, '').replace(/\s+/g, ' ').trim();
+  const cleanMeaning = value => clean(value).normalize('NFKC').replace(/\s*[（(](?:adj|adv|n|v|pron|prep|conj|num)(?:\.[^）)]*)?[）)]\s*/gi, ' ').trim();
   const isEnglish = value => {
     const text = clean(value).replace(/^[\d.、)）]+\s*/, '').replace(/[，。；;:：]+$/, '').trim();
-    return text.length <= 48 && /^[A-Za-z][A-Za-z'’\-]*(?:\s+[A-Za-z][A-Za-z'’\-]*){0,3}$/.test(text) && !headerCell.test(text);
+    return text.length <= 48 && /^(?:[A-Za-z]|\()[A-Za-z'’\-/().…]*(?:\s+[A-Za-z'’\-/().…]+)*$/.test(text) && /[A-Za-z]/.test(text) && !headerCell.test(text);
   };
   const englishText = value => clean(value).replace(/^[\d.、)）]+\s*/, '').replace(/[，。；;:：]+$/, '').trim();
 
@@ -35,7 +36,7 @@
   }
 
   function heading(text) {
-    const normalized = clean(text).replace(/[【】\[\]（）()]/g, '').replace(/[：:]$/, '').trim();
+    const normalized = clean(text).normalize('NFKC').replace(/[【】\[\]（）()]/g, '').replace(/[：:]$/, '').trim();
     if (stopHeading.test(normalized)) return { stop: true };
     if (vocabularyHeading.test(normalized)) {
       if (/认知词汇/i.test(normalized)) return { title: '认知词汇' };
@@ -51,7 +52,7 @@
     const sections = [];
     let active = false, category = '词汇', pendingEnglish = null;
     const add = (en, zh, section) => {
-      en = englishText(en); zh = clean(zh);
+      en = englishText(en); zh = cleanMeaning(zh);
       if (!isEnglish(en) || !hasChinese(zh) || zh.length > 100 || /[A-Za-z]{3,}/.test(zh)) return;
       let target = sections.find(item => item.title === section);
       if (!target) { target = { title: section, words: [] }; sections.push(target); }
@@ -65,26 +66,25 @@
       if (label?.title) { active = true; category = label.title; pendingEnglish = null; continue; }
       if (!active || line.cells.some(cell => headerCell.test(cell.text))) { pendingEnglish = null; continue; }
       const english = line.cells.filter(cell => isEnglish(cell.text));
-      const chinese = line.cells.filter(cell => hasChinese(cell.text) && !/[A-Za-z]{3,}/.test(cell.text));
+      const chinese = line.cells.map(cell => ({ ...cell, text: cleanMeaning(cell.text) })).filter(cell => hasChinese(cell.text) && !/[A-Za-z]{3,}/.test(cell.text));
+      const pairByPosition = (englishCells, chineseCells) => {
+        const usedChinese = new Set(), unmatchedEnglish = [];
+        for (const cell of englishCells) {
+          const match = chineseCells.map((candidate, index) => ({ candidate, index, distance: Math.abs(candidate.x - cell.x) })).filter(item => !usedChinese.has(item.index)).sort((a, b) => a.distance - b.distance)[0];
+          if (match) { usedChinese.add(match.index); add(cell.text, match.candidate.text, category); }
+          else unmatchedEnglish.push(cell);
+        }
+        return unmatchedEnglish;
+      };
       // Paired cells on the same baseline, as in a bilingual vocabulary table.
       if (english.length && chinese.length) {
-        const used = new Set();
-        for (const cell of line.cells) {
-          if (isEnglish(cell.text)) {
-            const match = chinese.map((candidate, index) => ({ candidate, index, distance: Math.abs(candidate.x - cell.x) })).filter(item => !used.has(item.index)).sort((a, b) => a.distance - b.distance)[0];
-            if (match) { used.add(match.index); add(cell.text, match.candidate.text, category); }
-          }
-        }
-        pendingEnglish = null;
+        const unmatched = pairByPosition(english, chinese);
+        pendingEnglish = unmatched.length ? { page: page.number, y: line.y, category, cells: unmatched } : null;
       } else if (english.length) {
         pendingEnglish = { page: page.number, y: line.y, category, cells: english };
       } else if (chinese.length && pendingEnglish && pendingEnglish.page === page.number && pendingEnglish.category === category && pendingEnglish.y - line.y <= 40) {
-        const used = new Set();
-        for (const cell of pendingEnglish.cells) {
-          const match = chinese.map((candidate, index) => ({ candidate, index, distance: Math.abs(candidate.x - cell.x) })).filter(item => !used.has(item.index)).sort((a, b) => a.distance - b.distance)[0];
-          if (match) { used.add(match.index); add(cell.text, match.candidate.text, category); }
-        }
-        pendingEnglish = null;
+        const unmatched = pairByPosition(pendingEnglish.cells, chinese);
+        pendingEnglish = unmatched.length ? { ...pendingEnglish, cells: unmatched } : null;
       } else pendingEnglish = null;
     }
     const useful = sections.filter(section => section.words.length);
