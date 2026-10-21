@@ -239,7 +239,9 @@ class BrowserTests(unittest.TestCase):
         expect(self.page.locator('#local-tag')).to_be_visible()
 
     def test_browser_import_date_is_stored_as_iso(self):
-        self.load(); self.import_week()
+        self.load()
+        self.page.evaluate('Intl.DateTimeFormat.prototype.formatToParts = undefined; Object.fromEntries = undefined')
+        self.import_week()
         dates = self.page.evaluate('JSON.parse(localStorage.getItem("maimai-garden-collections-v2")).weeks[0].date')
         self.assertRegex(dates, r'^\d{4}-\d{2}-\d{2}$')
 

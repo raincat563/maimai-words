@@ -14,10 +14,9 @@
   let storageReadable = true;
   const count = week => week.rows.reduce((n, row) => n + row.length, 0);
   const signature = week => JSON.stringify([week.child || 'maimai', week.rows.map(row => row.map(({ en, zh }) => [en, zh]))]);
-  const today = () => {
-    const parts = Object.fromEntries(new Intl.DateTimeFormat('en', { timeZone: 'Asia/Shanghai', year: 'numeric', month: '2-digit', day: '2-digit' }).formatToParts(new Date()).map(part => [part.type, part.value]));
-    return `${parts.year}-${parts.month}-${parts.day}`;
-  };
+  // Shanghai has no daylight-saving changes and stays at UTC+8. Avoid newer
+  // Intl.formatToParts APIs so older Chromium-based browsers can still import.
+  const today = () => new Date(Date.now() + 8 * 60 * 60 * 1000).toISOString().slice(0, 10);
   const uid = () => 'local-' + (crypto.randomUUID ? crypto.randomUUID() : Date.now() + '-' + Math.random().toString(36).slice(2));
   function el(tag, cls, text) { const n = document.createElement(tag); if (cls) n.className = cls; if (text !== undefined) n.textContent = text; return n; }
   function toast(text) { $('#toast').textContent = text; $('#toast').hidden = false; clearTimeout(toastTimer); toastTimer = setTimeout(() => $('#toast').hidden = true, 4500); }
