@@ -4,7 +4,7 @@
   const STORE = 'maimai-garden-collections-v2';
   const SELECTION = 'maimai-garden-selected-v2';
   const LATEST = 'maimai-garden-latest-published-v2';
-  const CHILDREN = { maimai: '麦麦', xiaoyu: '小屿' };
+  const CHILDREN = { maimai: '麦麦', xiaoyu: '小屿', damiao: '大喵' };
   const icon = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m11 5-5 4H3v6h3l5 4V5Z"/><path d="M15 8a6 6 0 0 1 0 8m3-11a10 10 0 0 1 0 14"/></svg>';
   let published = [], local = [], weeks = [], phonics = {};
   let selected = '', child = 'maimai', activeWord = null, anchor = null, pending = null;

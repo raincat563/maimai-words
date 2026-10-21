@@ -74,8 +74,8 @@ def append_week(path, catalogue, title, day, identity=None, child='maimai'):
     data = json.loads(catalogue.read_text()) if catalogue.exists() else {'version': 1, 'weeks': []}
     if data.get('version') != 1 or not isinstance(data.get('weeks'), list):
         raise ValueError('现有词表格式不正确，未修改文件')
-    if child not in ('maimai', 'xiaoyu'):
-        raise ValueError('孩子编号只能是 maimai 或 xiaoyu')
+    if child not in ('maimai', 'xiaoyu', 'damiao'):
+        raise ValueError('孩子编号只能是 maimai、xiaoyu 或 damiao')
     if any(week.get('child', 'maimai') == child and week['rows'] == rows for week in data['weeks']):
         raise ValueError('相同内容的词表已经存在，未重复添加')
     identities = {week['id'] for week in data['weeks']}
@@ -100,7 +100,7 @@ def main():
     parser.add_argument('--title', required=True)
     parser.add_argument('--date', required=True, help='YYYY-MM-DD，中国当地日期')
     parser.add_argument('--id', help='默认用日期，同日多份时指定不同编号')
-    parser.add_argument('--child', choices=('maimai', 'xiaoyu'), default='maimai', help='词表所属孩子，默认 maimai')
+    parser.add_argument('--child', choices=('maimai', 'xiaoyu', 'damiao'), default='maimai', help='词表所属孩子，默认 maimai')
     args = parser.parse_args()
     catalogue = ROOT / 'data' / 'weeks.json'
     try:
