@@ -8,4 +8,5 @@
 
 .phonics-segment.tone-0{color:#35734d}.phonics-segment.tone-1{color:#8556a2}.phonics-segment.tone-2{color:#b36831}.english{font-kerning:none;font-variant-ligatures:none}.voice-status{font-size:11px;line-height:1.8;color:#986941;margin:0 0 12px}
 .picker-divider{color:#c2c6ba;font-size:12px}.week-picker #child-select{max-width:90px;font-weight:650}.week-picker #week-select{max-width:280px}
+.vocab-section-label{font-size:12px;font-weight:600;color:#71815d;background:#f5f6ef;padding:11px 17px;margin:0;border-bottom:1px solid var(--line)}
 .primary-button{border:0;border-radius:9px;padding:11px 13px;font-size:12px;font-weight:500}

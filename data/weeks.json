@@ -2,6 +2,231 @@
   "version": 1,
   "weeks": [
     {
+      "id": "xiaoyu-ket-unit2-lesson22",
+      "child": "xiaoyu",
+      "title": "KET Unit 2 · Our Changing Planet · 第22次课",
+      "date": "2026-10-21",
+      "source": "KET第一阶段 第22次课 Unit2 Our Changing Planet.pdf",
+      "rows": [
+        [
+          {
+            "en": "desert",
+            "zh": "沙漠"
+          },
+          {
+            "en": "forest",
+            "zh": "森林"
+          }
+        ],
+        [
+          {
+            "en": "hill",
+            "zh": "小山"
+          },
+          {
+            "en": "lake",
+            "zh": "湖泊"
+          }
+        ],
+        [
+          {
+            "en": "mountain",
+            "zh": "高山"
+          },
+          {
+            "en": "river",
+            "zh": "河"
+          }
+        ],
+        [
+          {
+            "en": "sea",
+            "zh": "大海"
+          },
+          {
+            "en": "valley",
+            "zh": "山谷"
+          }
+        ],
+        [
+          {
+            "en": "volcano",
+            "zh": "火山"
+          },
+          {
+            "en": "dolphin",
+            "zh": "海豚"
+          }
+        ],
+        [
+          {
+            "en": "elephant",
+            "zh": "大象"
+          },
+          {
+            "en": "giraffe",
+            "zh": "长颈鹿"
+          }
+        ],
+        [
+          {
+            "en": "monkey",
+            "zh": "猴子"
+          },
+          {
+            "en": "parrot",
+            "zh": "鹦鹉"
+          }
+        ],
+        [
+          {
+            "en": "penguin",
+            "zh": "企鹅"
+          },
+          {
+            "en": "polar bear",
+            "zh": "北极熊"
+          }
+        ],
+        [
+          {
+            "en": "snake",
+            "zh": "蛇"
+          },
+          {
+            "en": "tiger",
+            "zh": "老虎"
+          }
+        ],
+        [
+          {
+            "en": "whale",
+            "zh": "鲸鱼"
+          }
+        ],
+        [
+          {
+            "en": "scientist",
+            "zh": "科学家"
+          },
+          {
+            "en": "believe",
+            "zh": "相信；认为"
+          }
+        ],
+        [
+          {
+            "en": "Earth",
+            "zh": "地球"
+          },
+          {
+            "en": "billion",
+            "zh": "十亿"
+          }
+        ],
+        [
+          {
+            "en": "however",
+            "zh": "然而；可是"
+          },
+          {
+            "en": "million",
+            "zh": "百万"
+          }
+        ],
+        [
+          {
+            "en": "rainforest",
+            "zh": "雨林"
+          },
+          {
+            "en": "earthquake",
+            "zh": "地震"
+          }
+        ],
+        [
+          {
+            "en": "glacier",
+            "zh": "冰川"
+          },
+          {
+            "en": "Arctic",
+            "zh": "北极；北极地区"
+          }
+        ],
+        [
+          {
+            "en": "possible",
+            "zh": "可能的"
+          },
+          {
+            "en": "continue",
+            "zh": "继续"
+          }
+        ],
+        [
+          {
+            "en": "bamboo",
+            "zh": "竹子"
+          },
+          {
+            "en": "Mexico",
+            "zh": "墨西哥"
+          }
+        ],
+        [
+          {
+            "en": "giant",
+            "zh": "巨大的；巨人"
+          },
+          {
+            "en": "kilogram",
+            "zh": "千克；公斤"
+          }
+        ],
+        [
+          {
+            "en": "weigh",
+            "zh": "重；称重"
+          },
+          {
+            "en": "New Zealand",
+            "zh": "新西兰"
+          }
+        ],
+        [
+          {
+            "en": "South Africa",
+            "zh": "南非"
+          },
+          {
+            "en": "Scotland",
+            "zh": "苏格兰"
+          }
+        ],
+        [
+          {
+            "en": "Argentina",
+            "zh": "阿根廷"
+          },
+          {
+            "en": "Kenya",
+            "zh": "肯尼亚"
+          }
+        ]
+      ],
+      "sectionHeaders": [
+        {
+          "title": "核心词汇",
+          "beforeRow": 0
+        },
+        {
+          "title": "认知词汇",
+          "beforeRow": 10
+        }
+      ]
+    },
+    {
       "id": "2026-10-19",
       "title": "本周单词",
       "date": "2026-10-19",

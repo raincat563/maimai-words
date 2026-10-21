@@ -37,7 +37,14 @@
       if (rows.flat().length > 2000) throw Error('每周词表最多支持 2,000 项。');
       const childId = week.child || 'maimai';
       if (!Object.hasOwn(CHILDREN, childId)) throw Error('词表所属孩子不正确。');
-      return { id: week.id, child: childId, title: week.title.trim(), date: week.date, source: typeof week.source === 'string' ? week.source.slice(0, 150) : '', rows };
+      const sectionHeaders = week.sectionHeaders === undefined ? [] : week.sectionHeaders;
+      if (!Array.isArray(sectionHeaders) || sectionHeaders.length > 20) throw Error('词汇分类格式不正确。');
+      let previousRow = -1;
+      sectionHeaders.forEach(section => {
+        if (!section || typeof section.title !== 'string' || !section.title.trim() || section.title.length > 30 || !Number.isInteger(section.beforeRow) || section.beforeRow <= previousRow || section.beforeRow >= rows.length) throw Error('词汇分类标题或位置不正确。');
+        previousRow = section.beforeRow;
+      });
+      return { id: week.id, child: childId, title: week.title.trim(), date: week.date, source: typeof week.source === 'string' ? week.source.slice(0, 150) : '', rows, ...(sectionHeaders.length ? { sectionHeaders } : {}) };
     });
   }
   function readLocal() {
@@ -68,7 +75,9 @@
     $('#word-count').textContent = count(week) + ' 项'; $('#local-tag').hidden = !week.isLocal;
     $('#list-date').textContent = week.isLocal ? '仅此浏览器' : '已发布 · ' + week.date.replaceAll('-', '.');
     let i = 0;
-    week.rows.forEach(row => {
+    week.rows.forEach((row, rowIndex) => {
+      const section = (week.sectionHeaders || []).find(item => item.beforeRow === rowIndex);
+      if (section) list.append(el('h3', 'vocab-section-label', section.title));
       const line = el('div', 'word-row'); line.style.setProperty('--columns', row.length);
       row.forEach(word => {
         const button = el('button', 'word-card'); button.type = 'button'; button.dataset.index = i;
