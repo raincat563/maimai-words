@@ -217,6 +217,11 @@ class BrowserTests(unittest.TestCase):
         expect(self.page.locator('.word-card')).to_have_count(4)
         expect(self.page.locator('#local-tag')).to_be_visible()
 
+    def test_browser_import_date_is_stored_as_iso(self):
+        self.load(); self.import_week()
+        dates = self.page.evaluate('JSON.parse(localStorage.getItem("maimai-garden-collections-v2")).weeks[0].date')
+        self.assertRegex(dates, r'^\d{4}-\d{2}-\d{2}$')
+
     def test_export_and_restore_merges_without_replacing_published_week(self):
         self.load(); self.import_week()
         with self.page.expect_download() as result: self.page.click('#backup')

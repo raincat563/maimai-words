@@ -68,6 +68,12 @@
       const english = line.cells.filter(cell => isEnglish(cell.text));
       const chinese = line.cells.map(cell => ({ ...cell, text: cleanMeaning(cell.text) })).filter(cell => hasChinese(cell.text) && !/[A-Za-z]{3,}/.test(cell.text));
       const pairByPosition = (englishCells, chineseCells) => {
+        // Tables with repeated Chinese/English columns align by column order;
+        // long English phrases can otherwise appear nearer to the next Chinese cell.
+        if (englishCells.length && englishCells.length === chineseCells.length) {
+          englishCells.forEach((cell, index) => add(cell.text, chineseCells[index].text, category));
+          return [];
+        }
         const usedChinese = new Set(), unmatchedEnglish = [];
         for (const cell of englishCells) {
           const match = chineseCells.map((candidate, index) => ({ candidate, index, distance: Math.abs(candidate.x - cell.x) })).filter(item => !usedChinese.has(item.index)).sort((a, b) => a.distance - b.distance)[0];

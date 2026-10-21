@@ -14,7 +14,10 @@
   let storageReadable = true;
   const count = week => week.rows.reduce((n, row) => n + row.length, 0);
   const signature = week => JSON.stringify([week.child || 'maimai', week.rows.map(row => row.map(({ en, zh }) => [en, zh]))]);
-  const today = () => new Date().toLocaleDateString('sv-SE', { timeZone: 'Asia/Shanghai' });
+  const today = () => {
+    const parts = Object.fromEntries(new Intl.DateTimeFormat('en', { timeZone: 'Asia/Shanghai', year: 'numeric', month: '2-digit', day: '2-digit' }).formatToParts(new Date()).map(part => [part.type, part.value]));
+    return `${parts.year}-${parts.month}-${parts.day}`;
+  };
   const uid = () => 'local-' + (crypto.randomUUID ? crypto.randomUUID() : Date.now() + '-' + Math.random().toString(36).slice(2));
   function el(tag, cls, text) { const n = document.createElement(tag); if (cls) n.className = cls; if (text !== undefined) n.textContent = text; return n; }
   function toast(text) { $('#toast').textContent = text; $('#toast').hidden = false; clearTimeout(toastTimer); toastTimer = setTimeout(() => $('#toast').hidden = true, 4500); }
@@ -25,7 +28,10 @@
     let total = 0;
     const ids = new Set();
     return data.weeks.map(week => {
-      if (!week || typeof week.id !== 'string' || !week.id || week.id.length > 100 || ids.has(week.id) || typeof week.title !== 'string' || !week.title.trim() || week.title.length > 60 || typeof week.date !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(week.date) || !Array.isArray(week.rows) || !week.rows.length || week.rows.length > 1000) throw Error('词表名称、日期、编号或行数不正确。');
+      if (!week || typeof week.id !== 'string' || !week.id || week.id.length > 100 || ids.has(week.id)) throw Error('词表编号不正确。');
+      if (typeof week.title !== 'string' || !week.title.trim() || week.title.length > 60) throw Error('词表名称需为 1–60 个字符。');
+      if (typeof week.date !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(week.date)) throw Error('词表日期格式不正确。');
+      if (!Array.isArray(week.rows) || !week.rows.length || week.rows.length > 1000) throw Error('词表行数不正确。');
       ids.add(week.id);
       const rows = week.rows.map(row => {
         if (!Array.isArray(row) || !row.length || row.length > 3) throw Error('每行需要 1–3 组英文和中文。');
