@@ -846,5 +846,354 @@
     ],
     "ipa": "wʊd ˈrɑːðə",
     "hint": "would 的 l 不发音，oul 读 /ʊ/；rather 的 th 要舌尖轻碰齿间、有声地发 /ð/。"
+  },
+  "desert": {
+    "kind": "syllables",
+    "parts": [
+      "des",
+      "ert"
+    ],
+    "hint": "两拍 DES-ert，第一拍重读，第二拍轻读。"
+  },
+  "forest": {
+    "kind": "syllables",
+    "parts": [
+      "for",
+      "est"
+    ],
+    "hint": "两拍 FOR-est，第一拍重读。"
+  },
+  "hill": {
+    "kind": "blend",
+    "parts": [
+      "h",
+      "i",
+      "ll"
+    ],
+    "hint": "i 发短音 /ɪ/，词尾 ll 合起来发一个 /l/。"
+  },
+  "lake": {
+    "kind": "blend",
+    "parts": [
+      "l",
+      "a",
+      "k",
+      "e"
+    ],
+    "hint": "这是 a_e 的长音规律：末尾 e 不发音，a 读字母音 /eɪ/。"
+  },
+  "mountain": {
+    "kind": "syllables",
+    "parts": [
+      "moun",
+      "tain"
+    ],
+    "hint": "两拍 moun-tain，常见字母组合 tain 在这里读 /tən/。"
+  },
+  "river": {
+    "kind": "syllables",
+    "parts": [
+      "riv",
+      "er"
+    ],
+    "hint": "两拍 RIV-er，第一拍重读。"
+  },
+  "sea": {
+    "kind": "blend",
+    "parts": [
+      "s",
+      "ea"
+    ],
+    "hint": "ea 合在一起发长音 /iː/。"
+  },
+  "valley": {
+    "kind": "syllables",
+    "parts": [
+      "val",
+      "ley"
+    ],
+    "hint": "两拍 VAL-ley，词尾 ey 在这里读 /i/。"
+  },
+  "volcano": {
+    "kind": "syllables",
+    "parts": [
+      "vol",
+      "ca",
+      "no"
+    ],
+    "hint": "三拍 vol-ca-no，重读中间的 ca。"
+  },
+  "dolphin": {
+    "kind": "syllables",
+    "parts": [
+      "dol",
+      "phin"
+    ],
+    "hint": "两拍 DOL-phin，ph 合起来发 /f/。"
+  },
+  "elephant": {
+    "kind": "syllables",
+    "parts": [
+      "el",
+      "e",
+      "phant"
+    ],
+    "hint": "三拍 EL-e-phant，ph 发 /f/。"
+  },
+  "giraffe": {
+    "kind": "syllables",
+    "parts": [
+      "gi",
+      "raffe"
+    ],
+    "hint": "两拍 gi-RAFFE，g 在这里发 /dʒ/。"
+  },
+  "monkey": {
+    "kind": "syllables",
+    "parts": [
+      "mon",
+      "key"
+    ],
+    "hint": "两拍 MON-key，词尾 ey 在这里发长音 /iː/。"
+  },
+  "parrot": {
+    "kind": "syllables",
+    "parts": [
+      "par",
+      "rot"
+    ],
+    "hint": "两拍 PAR-rot，第一拍重读。"
+  },
+  "penguin": {
+    "kind": "syllables",
+    "parts": [
+      "pen",
+      "guin"
+    ],
+    "hint": "两拍 PEN-guin，第一拍重读。"
+  },
+  "polar bear": {
+    "kind": "phrase",
+    "parts": [
+      "po",
+      "lar",
+      "bear"
+    ],
+    "hint": "分成 PO-lar bear；polar 两拍，bear 里的 ear 发 /eə/。"
+  },
+  "snake": {
+    "kind": "blend",
+    "parts": [
+      "s",
+      "n",
+      "a",
+      "k",
+      "e"
+    ],
+    "hint": "a_e 是长音规律：末尾 e 不发音，a 读 /eɪ/。"
+  },
+  "tiger": {
+    "kind": "syllables",
+    "parts": [
+      "ti",
+      "ger"
+    ],
+    "hint": "两拍 TI-ger，i 在重读开音节中读 /aɪ/。"
+  },
+  "whale": {
+    "kind": "blend",
+    "parts": [
+      "wh",
+      "ale"
+    ],
+    "hint": "wh 发 /w/；ale 中 a_e 发长音 /eɪ/，末尾 e 不发音。"
+  },
+  "scientist": {
+    "kind": "syllables",
+    "parts": [
+      "sci",
+      "en",
+      "tist"
+    ],
+    "hint": "三拍 SCI-en-tist，开头 sci 发 /saɪ/。"
+  },
+  "believe": {
+    "kind": "syllables",
+    "parts": [
+      "be",
+      "lieve"
+    ],
+    "hint": "两拍 be-LIEVE，词尾 ie 在这里发长音 /iː/。"
+  },
+  "earth": {
+    "kind": "blend",
+    "parts": [
+      "ear",
+      "th"
+    ],
+    "hint": "ear 在 earth 里发 /ɜː/，th 发 /θ/。"
+  },
+  "billion": {
+    "kind": "syllables",
+    "parts": [
+      "bil",
+      "lion"
+    ],
+    "hint": "两拍 bil-lion，词尾 -ion 轻读。"
+  },
+  "however": {
+    "kind": "syllables",
+    "parts": [
+      "how",
+      "ev",
+      "er"
+    ],
+    "hint": "三拍 how-EV-er，重读中间一拍。"
+  },
+  "million": {
+    "kind": "syllables",
+    "parts": [
+      "mil",
+      "lion"
+    ],
+    "hint": "两拍 mil-lion，词尾 -ion 轻读。"
+  },
+  "rainforest": {
+    "kind": "syllables",
+    "parts": [
+      "rain",
+      "for",
+      "est"
+    ],
+    "hint": "三拍 rain-for-est，rain 里的 ai 发长音 /eɪ/。"
+  },
+  "earthquake": {
+    "kind": "syllables",
+    "parts": [
+      "earth",
+      "quake"
+    ],
+    "hint": "两部分 earth-quake；quake 里的 a_e 发 /eɪ/。"
+  },
+  "glacier": {
+    "kind": "syllables",
+    "parts": [
+      "gla",
+      "cier"
+    ],
+    "hint": "两拍 GLA-cier；ci 在这里发 /ʃ/。"
+  },
+  "arctic": {
+    "kind": "syllables",
+    "parts": [
+      "arc",
+      "tic"
+    ],
+    "hint": "两拍 ARC-tic，第一拍重读。"
+  },
+  "possible": {
+    "kind": "syllables",
+    "parts": [
+      "pos",
+      "si",
+      "ble"
+    ],
+    "hint": "三拍 POS-si-ble，词尾 -ble 轻读。"
+  },
+  "continue": {
+    "kind": "syllables",
+    "parts": [
+      "con",
+      "tin",
+      "ue"
+    ],
+    "hint": "三拍 con-TIN-ue，重读中间一拍。"
+  },
+  "bamboo": {
+    "kind": "syllables",
+    "parts": [
+      "bam",
+      "boo"
+    ],
+    "hint": "两拍 bam-BOO，oo 发长音 /uː/。"
+  },
+  "mexico": {
+    "kind": "syllables",
+    "parts": [
+      "mex",
+      "i",
+      "co"
+    ],
+    "hint": "三拍 MEX-i-co，第一拍重读。"
+  },
+  "giant": {
+    "kind": "syllables",
+    "parts": [
+      "gi",
+      "ant"
+    ],
+    "hint": "两拍 GI-ant，开头 g 发 /dʒ/。"
+  },
+  "kilogram": {
+    "kind": "syllables",
+    "parts": [
+      "kil",
+      "o",
+      "gram"
+    ],
+    "hint": "三拍 KIL-o-gram。"
+  },
+  "weigh": {
+    "kind": "blend",
+    "parts": [
+      "w",
+      "eigh"
+    ],
+    "hint": "eigh 合起来发长音 /eɪ/。"
+  },
+  "new zealand": {
+    "kind": "phrase",
+    "parts": [
+      "New",
+      "Zea",
+      "land"
+    ],
+    "hint": "分词节奏读 New Zea-land；eigh 在 Zealand 里发 /iː/。"
+  },
+  "south africa": {
+    "kind": "phrase",
+    "parts": [
+      "South",
+      "Af",
+      "ri",
+      "ca"
+    ],
+    "hint": "分词节奏读 South Af-ri-ca；th 发 /θ/。"
+  },
+  "scotland": {
+    "kind": "syllables",
+    "parts": [
+      "Scot",
+      "land"
+    ],
+    "hint": "两拍 SCOT-land，第一拍重读。"
+  },
+  "argentina": {
+    "kind": "syllables",
+    "parts": [
+      "Ar",
+      "gen",
+      "ti",
+      "na"
+    ],
+    "hint": "四拍 Ar-gen-ti-na，重读第三拍 ti。"
+  },
+  "kenya": {
+    "kind": "syllables",
+    "parts": [
+      "Ken",
+      "ya"
+    ],
+    "hint": "两拍 KEN-ya，第一拍重读。"
   }
 }
