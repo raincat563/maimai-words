@@ -199,6 +199,27 @@ class BrowserTests(unittest.TestCase):
         self.page.reload(); expect(self.page.locator('.word-card')).to_have_count(86)
         expect(self.page.locator('#week-select option')).to_have_count(2)
 
+    def test_selected_local_week_can_be_deleted_without_touching_published_weeks(self):
+        self.page.set_viewport_size({'width':390,'height':844}); self.load(); self.import_week()
+        expect(self.page.locator('#delete-week')).to_be_visible()
+        self.assertTrue(self.page.evaluate('document.documentElement.scrollWidth <= innerWidth'))
+        self.page.once('dialog', lambda dialog: dialog.accept())
+        self.page.click('#delete-week')
+        expect(self.page.locator('#week-select option')).to_have_count(1)
+        expect(self.page.locator('#week-select')).to_have_value(MAIMAI_WEEK['id'])
+        expect(self.page.locator('.word-card')).to_have_count(86)
+        expect(self.page.locator('#delete-week')).to_be_hidden()
+        saved = self.page.evaluate('JSON.parse(localStorage.getItem("maimai-garden-collections-v2"))')
+        self.assertEqual(saved['weeks'], [])
+
+    def test_cancel_local_week_deletion_keeps_it(self):
+        self.load(); self.import_week()
+        self.page.once('dialog', lambda dialog: dialog.dismiss())
+        self.page.click('#delete-week')
+        expect(self.page.locator('.word-card')).to_have_count(4)
+        expect(self.page.locator('#delete-week')).to_be_visible()
+        self.assertEqual(len(self.page.evaluate('JSON.parse(localStorage.getItem("maimai-garden-collections-v2")).weeks')), 1)
+
     def test_duplicate_import_rejected_without_modification(self):
         self.load(); self.import_week(); self.upload()
         expect(self.page.locator('#import-error')).to_contain_text('已经在花园里')

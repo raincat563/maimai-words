@@ -78,6 +78,7 @@
     clearActiveWord();
     const week = weeks.find(w => w.id === selected), list = $('#word-list');
     list.replaceChildren(); list.setAttribute('aria-busy', 'false');
+    $('#delete-week').hidden = !week?.isLocal;
     if (!week) { $('#word-count').textContent = '— 项'; $('#local-tag').hidden = true; $('#list-date').textContent = ''; list.append(el('p', 'loading', `${CHILDREN[child]}还没有词表，导入第一周的单词吧。`)); return; }
     $('#word-count').textContent = count(week) + ' 项'; $('#local-tag').hidden = !week.isLocal;
     $('#list-date').textContent = week.isLocal ? '仅此浏览器' : '已发布 · ' + week.date.replaceAll('-', '.');
@@ -354,6 +355,16 @@
     const blob = new Blob([JSON.stringify({ version: 1, weeks: ownWeeks.map(({ isLocal, ...w }) => w) }, null, 2)], { type: 'application/json' });
     const a = el('a'); const url = URL.createObjectURL(blob); a.href = url; a.download = `${CHILDREN[child]}的词表备份-${today()}.json`; a.click(); setTimeout(() => URL.revokeObjectURL(url), 1000);
   }
+  function deleteLocalWeek() {
+    const week = weeks.find(item => item.id === selected && item.isLocal);
+    if (!week || !window.confirm(`确定删除“${week.title}”吗？这只会从此浏览器移除，不影响其他词表。`)) return;
+    const next = local.filter(item => !(item.id === week.id && item.child === child));
+    try { localStorage.setItem(STORE, JSON.stringify({ version: 1, weeks: next })); }
+    catch (_) { toast('删除失败，原词表仍保留。请检查此浏览器的存储空间。'); return; }
+    local = next; selected = ''; rebuild();
+    try { localStorage.setItem(SELECTION, selected); } catch (_) { /* The collection has already been deleted. */ }
+    toast(`已从此浏览器删除“${week.title}”。`);
+  }
   async function init() {
     $('#help-open').onclick = () => { clearActiveWord(); $('#help-dialog').showModal(); };
     $('#import-open').onclick = showImport; $('#word-file').onchange = onFile; $('#import-confirm').onclick = confirmImport;
@@ -361,6 +372,7 @@
     $('[data-close="help-dialog"]').onclick = () => $('#help-dialog').close();
     $('#import-dialog').addEventListener('cancel', () => { importGeneration++; pending = null; });
     $('#backup').onclick = backup;
+    $('#delete-week').onclick = deleteLocalWeek;
     document.querySelectorAll('.study-mode[data-study-mode]').forEach(button => button.onclick = () => { studyMode = button.dataset.studyMode; updateStudyMode(); });
     $('#preview-list').addEventListener('input', event => updatePreviewField(event.target));
     $('#preview-list').addEventListener('click', event => { const button = event.target.closest('.preview-remove'); if (button) removePreviewWord(button); });
