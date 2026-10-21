@@ -2,7 +2,7 @@
 (() => {
   'use strict';
   const vocabularyHeading = /^(核心词汇|认知词汇|认读词汇|重点词汇|重点单词|核心单词|词汇表|单词表|单词|vocabulary|core vocabulary|key vocabulary|recognition vocabulary|word list)$/i;
-  const stopHeading = /^(?:语法知识|语法|作业|练习题?|课文|句型|句子默写|短文翻译|口语(?:\/写作)?|写作|grammar|homework|reading|writing|sentence patterns?)$/i;
+  const stopHeading = /^(?:重点语法|语法知识|语法|作业|练习题?|课文|句型|句子默写|短文翻译|口语(?:\/写作)?|写作|grammar|homework|reading|writing|sentence patterns?)$/i;
   const headerCell = /^(汉语含义|中文含义|英语单词|英文单词|单词|释义|meaning|chinese|english|word|vocabulary)$/i;
   const hasChinese = value => /[\u3400-\u9fff]/.test(value);
   const clean = value => value.replace(/[\u200b\ufeff]/g, '').replace(/\s+/g, ' ').trim();

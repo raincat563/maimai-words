@@ -205,6 +205,18 @@ class BrowserTests(unittest.TestCase):
         expect(self.page.locator('#week-select option')).to_have_count(2)
         expect(self.page.locator('#import-preview')).to_be_hidden()
 
+    def test_local_import_is_not_blocked_by_published_archive_limit(self):
+        weeks = [dict(id=f'week-{i}', title=f'第{i}周', date='2026-10-01', rows=[[{'en':f'word{i}', 'zh':'单词'}]]) for i in range(100)]
+        self.page.route('**/data/weeks.json', lambda route: route.fulfill(json={'version':1,'weeks':weeks}))
+        self.page.goto(self.base)
+        expect(self.page.locator('.word-card')).to_have_count(1)
+        self.upload()
+        expect(self.page.locator('#import-preview')).to_be_visible()
+        self.page.fill('#import-name', '本地新增词表')
+        self.page.click('#import-confirm')
+        expect(self.page.locator('.word-card')).to_have_count(4)
+        expect(self.page.locator('#local-tag')).to_be_visible()
+
     def test_export_and_restore_merges_without_replacing_published_week(self):
         self.load(); self.import_week()
         with self.page.expect_download() as result: self.page.click('#backup')

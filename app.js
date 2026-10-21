@@ -334,7 +334,9 @@
     const additions = pending.map(w => ({ ...w, child, id: uid(), title: pending.length === 1 ? name : w.title }));
     const next = [...additions, ...local];
     try {
-      validateData({ version: 1, weeks: [...published, ...next] });
+      // Published data is validated when fetched; a large public archive must not
+      // prevent a browser from saving its own additional week locally.
+      validateData({ version: 1, weeks: next });
       localStorage.setItem(STORE, JSON.stringify({ version: 1, weeks: next }));
     } catch (error) { importError('没有保存成功，原有词表仍保留。' + (error.name === 'QuotaExceededError' ? '浏览器空间不足，请先备份并清理其他网站数据。' : error.message)); return; }
     local = next; selected = additions[0].id; pending = null; $('#import-dialog').close(); rebuild();
