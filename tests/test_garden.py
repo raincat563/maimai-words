@@ -19,6 +19,7 @@ from add_week import append_week, parse_docx
 
 SOURCE = json.loads((ROOT / 'data/weeks.json').read_text())
 PHONICS = json.loads((ROOT / 'data/phonics.json').read_text())
+MAIMAI_WEEK = next(week for week in SOURCE['weeks'] if week.get('child', 'maimai') == 'maimai')
 ROWS = [[('moon', '月亮'), ('boat', '小船')], [('ship', '船'), ('train', '火车')]]
 
 
@@ -33,7 +34,7 @@ def docx_bytes(rows=ROWS, merge=False):
 
 class CatalogueTests(unittest.TestCase):
     def test_source_and_phonics_coverage(self):
-        week = SOURCE['weeks'][0]
+        week = MAIMAI_WEEK
         self.assertEqual(len(week['rows']), 43)
         self.assertEqual(sum(map(len, week['rows'])), 86)
         self.assertEqual([w['en'] for w in week['rows'][0]], ['keep', 'mind'])
@@ -80,9 +81,11 @@ class QuietHandler(SimpleHTTPRequestHandler):
 
 VOICE_STUB = """(() => {
 window.__spoken = [];
+window.__audioPlayed = [];
 window.__voices = [{name:'US voice', lang:'en-US', localService:true}, {name:'British voice', lang:'en-GB', localService:true}];
 window.__voiceEvents = {};
 window.SpeechSynthesisUtterance = class { constructor(text) {this.text=text;} };
+window.Audio = class { constructor(src) {this.src=src;this.currentTime=0;} play() {window.__audioPlayed.push(this.src); if(window.__audioFails) return Promise.reject(new Error('blocked')); if(this.onplay) this.onplay(); return Promise.resolve();} pause() {} };
 Object.defineProperty(window,'speechSynthesis',{value:{
 getVoices:()=>window.__voices,
 addEventListener:(type,fn)=>window.__voiceEvents[type]=fn,
@@ -135,7 +138,7 @@ class BrowserTests(unittest.TestCase):
         requested = []
         self.page.on('request', lambda r: requested.append(r.url))
         self.load()
-        expected = [w['en'] for row in SOURCE['weeks'][0]['rows'] for w in row]
+        expected = [w['en'] for row in MAIMAI_WEEK['rows'] for w in row]
         self.assertEqual(self.page.locator('.english').all_text_contents(), expected)
         self.assertEqual(self.page.locator('.word-row').count(), 43)
         self.assertTrue(all(u.startswith(self.base) for u in requested))
@@ -153,10 +156,10 @@ class BrowserTests(unittest.TestCase):
         self.assertEqual(card.bounding_box(), before)
         colors = card.locator('.phonics-segment').evaluate_all('(parts) => parts.map(p=>getComputedStyle(p).color)')
         self.assertEqual(len(set(colors)), 3)
-        self.assertEqual(self.page.evaluate('__spoken[0]'), {'text':'keep','rate':1,'lang':'en-GB','voice':'en-GB'})
+        self.assertEqual(self.page.evaluate('__audioPlayed[0]'), './' + json.loads((ROOT / 'data/audio.json').read_text())['keep'])
         expect(self.page.locator('#voice-status')).to_be_hidden()
         card.click()
-        self.assertEqual(self.page.evaluate('__spoken.length'), 2)
+        self.assertEqual(self.page.evaluate('__audioPlayed.length'), 2)
         self.assertEqual(card.locator('.phonics-segment').count(), 3)
         self.page.locator('.word-card').nth(1).click()
         expect(card.locator('.phonics-segment')).to_have_count(0)
@@ -172,21 +175,16 @@ class BrowserTests(unittest.TestCase):
             self.assertEqual(word['before'], word['after'])
             self.assertGreater(word['groups'], 0, word['before'])
 
-    def test_missing_uk_voice_never_uses_us_voice(self):
-        self.load(); self.page.evaluate('__voices = __voices.filter(v=>v.lang==="en-US")')
+    def test_bundled_british_audio_works_without_device_voices(self):
+        self.load(); self.page.evaluate('__voices = []')
         self.page.locator('.word-card').first.click()
-        expect(self.page.locator('#voice-status')).to_contain_text('尚无可用英音')
+        self.assertEqual(self.page.evaluate('__audioPlayed.length'), 1)
         self.assertEqual(self.page.evaluate('__spoken.length'), 0)
-        self.page.evaluate('__voices.push({name:"UK",lang:"en-GB",localService:true});__voiceEvents.voiceschanged()')
-        expect(self.page.locator('#voice-status')).to_contain_text('已就绪')
-        self.page.locator('.word-card').first.click()
-        self.assertEqual(self.page.evaluate('__spoken.length'), 1)
 
     def test_speech_failure_is_visible(self):
-        self.load()
-        self.page.evaluate('() => {speechSynthesis.speak = u => u.onerror({error:"network"});}')
+        self.load(); self.page.evaluate('__voices = []; __audioFails = true')
         self.page.locator('.word-card').first.click()
-        expect(self.page.locator('#voice-status')).to_contain_text('没能播放')
+        expect(self.page.locator('#voice-status')).to_contain_text('网站英音暂时没有加载成功')
 
     def test_incremental_import_archive_reload_and_unknown_phonics(self):
         self.load(); self.import_week()
@@ -196,7 +194,7 @@ class BrowserTests(unittest.TestCase):
         self.assertEqual(self.page.evaluate('__spoken[0].text'), 'moon')
         self.page.reload()
         expect(self.page.locator('.word-card')).to_have_count(4)
-        self.page.select_option('#week-select', SOURCE['weeks'][0]['id'])
+        self.page.select_option('#week-select', MAIMAI_WEEK['id'])
         expect(self.page.locator('.word-card')).to_have_count(86)
         self.page.reload(); expect(self.page.locator('.word-card')).to_have_count(86)
         expect(self.page.locator('#week-select option')).to_have_count(2)
@@ -218,7 +216,7 @@ class BrowserTests(unittest.TestCase):
         expect(self.page.locator('#import-preview')).to_be_visible()
         self.page.click('#import-confirm')
         expect(self.page.locator('#week-select option')).to_have_count(2)
-        self.page.select_option('#week-select', SOURCE['weeks'][0]['id'])
+        self.page.select_option('#week-select', MAIMAI_WEEK['id'])
         expect(self.page.locator('.word-card')).to_have_count(86)
 
     def test_corrupt_files_and_merged_tables_rejected(self):
@@ -255,6 +253,7 @@ class BrowserTests(unittest.TestCase):
     def test_mobile_inline_coloring_and_help(self):
         self.page.set_viewport_size({'width':390,'height':844}); self.load()
         self.assertTrue(self.page.evaluate('document.documentElement.scrollWidth <= innerWidth'))
+        self.assertLess(self.page.locator('.word-card').first.bounding_box()['y'], 370)
         card = self.page.locator('.word-card').nth(85)
         card.scroll_into_view_if_needed()
         before = card.bounding_box()
@@ -267,13 +266,41 @@ class BrowserTests(unittest.TestCase):
         expect(self.page.locator('#help-dialog')).to_be_visible()
         self.page.keyboard.press('Escape'); expect(self.page.locator('#help-dialog')).to_be_hidden()
 
+    def test_dictation_modes_hide_each_language_and_restore_all(self):
+        self.load()
+        self.page.click('[data-study-mode="hide-chinese"]')
+        expect(self.page.locator('#word-list')).to_have_attribute('data-study-mode', 'hide-chinese')
+        self.assertEqual(self.page.locator('.chinese').first.evaluate('(node)=>getComputedStyle(node).visibility'), 'hidden')
+        self.assertEqual(self.page.locator('.english').first.evaluate('(node)=>getComputedStyle(node).visibility'), 'visible')
+        self.page.click('[data-study-mode="hide-english"]')
+        self.assertEqual(self.page.locator('.english').first.evaluate('(node)=>getComputedStyle(node).visibility'), 'hidden')
+        self.assertEqual(self.page.locator('.chinese').first.evaluate('(node)=>getComputedStyle(node).visibility'), 'visible')
+        self.page.click('[data-study-mode="all"]')
+        self.assertEqual(self.page.locator('.english').first.evaluate('(node)=>getComputedStyle(node).visibility'), 'visible')
+        self.assertEqual(self.page.locator('.chinese').first.evaluate('(node)=>getComputedStyle(node).visibility'), 'visible')
+
+    def test_import_preview_can_edit_delete_and_add_words(self):
+        self.load(); self.upload()
+        expect(self.page.locator('.preview-input')).to_have_count(8)
+        self.page.locator('.preview-input').nth(0).fill('moonlight')
+        self.page.locator('.preview-remove').nth(1).click()
+        self.page.click('#preview-add')
+        inputs = self.page.locator('.preview-input')
+        inputs.nth(6).fill('star')
+        inputs.nth(7).fill('星星')
+        self.page.fill('#import-name', '修改后的词表')
+        self.page.click('#import-confirm')
+        expect(self.page.locator('.word-card')).to_have_count(4)
+        words = self.page.locator('.word-card .english').all_text_contents()
+        self.assertEqual(words, ['moonlight', 'ship', 'train', 'star'])
+
     def test_new_published_week_opens_latest_and_keeps_history(self):
         self.load()
         new = {'id':'2026-10-26','title':'新一周','date':'2026-10-26','rows':[[{'en':'moon','zh':'月亮'}]]}
         self.page.route('**/data/weeks.json', lambda route: route.fulfill(json={'version':1,'weeks':[new,*SOURCE['weeks']]}))
         self.page.reload(); expect(self.page.locator('.word-card')).to_have_count(1)
         expect(self.page.locator('#week-select')).to_have_value(new['id'])
-        self.page.select_option('#week-select', SOURCE['weeks'][0]['id'])
+        self.page.select_option('#week-select', MAIMAI_WEEK['id'])
         expect(self.page.locator('.word-card')).to_have_count(86)
 
     def test_catalogue_network_failure_preserves_local_data(self):

@@ -10,3 +10,25 @@
 .picker-divider{color:#c2c6ba;font-size:12px}.week-picker #child-select{max-width:90px;font-weight:650}.week-picker #week-select{max-width:280px}
 .vocab-section-label{font-size:12px;font-weight:600;color:#71815d;background:#f5f6ef;padding:11px 17px;margin:0;border-bottom:1px solid var(--line)}
 .primary-button{border:0;border-radius:9px;padding:11px 13px;font-size:12px;font-weight:500}
+
+/* Put the word collection higher on the first screen, especially on phones. */
+.hero{min-height:260px;padding-top:22px;padding-bottom:20px}.hero-art{height:210px}
+.study-toolbar{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin:0 0 12px;color:var(--muted);font-size:11px}
+.study-toolbar>span{margin-right:3px}
+.study-mode,.secondary-button{border:1px solid #dce2d3;border-radius:999px;background:#fffefa;color:#65715f;padding:7px 12px;font-size:11px;line-height:1.2}
+.study-mode:hover,.secondary-button:hover{background:#f0f3e8}
+.study-mode[aria-pressed="true"]{background:#e7eddc;border-color:#cbd6bd;color:#38583f;font-weight:600}
+.word-list[data-study-mode="hide-chinese"] .chinese,.word-list[data-study-mode="hide-english"] .english{visibility:hidden}
+.preview-list{max-height:min(38vh,320px)}
+.preview-row{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) auto;align-items:center;padding:5px 8px;gap:6px}
+.preview-input{width:100%;min-width:0;border:1px solid transparent;border-radius:6px;background:transparent;color:var(--ink);padding:7px 6px;font:inherit;font-size:12px}
+.preview-input:focus{background:#fffefa;border-color:#d8dfcc;outline:2px solid #dbe5d1}
+.preview-input.preview-meaning{color:#737a6c;font-size:11px}
+.preview-remove{border:0;border-radius:6px;background:transparent;color:#a27564;padding:7px 5px;font-size:10px}
+.preview-remove:hover{background:#f7eee8}
+.preview-section-title,.preview-week-title{margin:0;padding:8px 10px;background:#f3f5ed;color:#657752;font-size:11px;font-weight:600}
+.preview-week-title{background:#eaf0df;color:var(--ink)}
+#preview-add{margin-top:10px;border-radius:8px}
+@media(max-width:760px){.hero{min-height:220px;padding:18px 0 14px}.hero-art{height:180px}}
+@media(max-width:540px){.hero{min-height:0;padding:12px 0 8px}.hero-art,.hero .eyebrow,.hero-description,.hero-tags{display:none}.hero h1{font-size:22px;line-height:1.3;margin:0}.hero h1 br{display:none}.title-spark{width:18px;right:-24px;bottom:2px}.section-index{display:none}.section-head{margin-bottom:12px}.study-toolbar{gap:5px;margin-bottom:9px}.study-mode{padding:7px 10px;font-size:10px}}
+@media(max-width:390px){#word-list .word-row{grid-template-columns:1fr!important}.word-card{border-right:0;border-bottom:1px solid var(--line)}.word-card:last-child{border-bottom:0}}

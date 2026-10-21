@@ -9,6 +9,7 @@
   let published = [], local = [], weeks = [], phonics = {};
   let selected = '', child = 'maimai', activeWord = null, anchor = null, pending = null;
   let toastTimer, importGeneration = 0, speechGeneration = 0, activeUtterance = null, activeAudio = null;
+  let studyMode = 'all';
   let audioFiles = {};
   let storageReadable = true;
   const count = week => week.rows.reduce((n, row) => n + row.length, 0);
@@ -81,7 +82,7 @@
       const line = el('div', 'word-row'); line.style.setProperty('--columns', row.length);
       row.forEach(word => {
         const button = el('button', 'word-card'); button.type = 'button'; button.dataset.index = i;
-        button.setAttribute('aria-label', word.en + '，' + word.zh + '，听英音和拼读');
+        button.dataset.english = word.en; button.dataset.chinese = word.zh;
         button.setAttribute('aria-pressed', 'false');
         const info = el('span', 'word-info'), text = el('span', 'word-text');
         const en = el('span', 'english', word.en); en.lang = 'en';
@@ -89,6 +90,20 @@
         const speaker = el('span', 'speaker'); speaker.setAttribute('aria-hidden', 'true'); speaker.innerHTML = icon;
         button.append(info, speaker); button.onclick = () => playWord(word, button); line.append(button);
       }); list.append(line);
+    });
+    updateStudyMode();
+  }
+  function updateStudyMode() {
+    const list = $('#word-list');
+    list.dataset.studyMode = studyMode;
+    document.querySelectorAll('.study-mode[data-study-mode]').forEach(button => {
+      const selected = button.dataset.studyMode === studyMode;
+      button.setAttribute('aria-pressed', String(selected));
+    });
+    list.querySelectorAll('.word-card').forEach(button => {
+      const english = button.dataset.english, chinese = button.dataset.chinese;
+      const prompt = studyMode === 'hide-english' ? `${chinese}，英文已隐藏` : studyMode === 'hide-chinese' ? `${english}，中文已隐藏` : `${english}，${chinese}`;
+      button.setAttribute('aria-label', `${prompt}，点击播放英音`);
     });
   }
   function clearActiveWord() {
@@ -159,19 +174,29 @@
   function playAudioFile(path, token) {
     const audio = new Audio('./' + path);
     activeAudio = audio;
+    let failed = false;
+    const fallback = () => {
+      if (failed || token !== speechGeneration) return;
+      failed = true;
+      anchor?.classList.remove('speaking'); activeAudio = null;
+      const selection = speechVoice();
+      if (selection) playWithVoice(selection, token, false);
+      else voiceStatus('网站英音暂时没有加载成功，设备也没有可用英语语音，请检查网络或设备语音设置。');
+    };
     audio.onplay = () => { if (token === speechGeneration) anchor?.classList.add('speaking'); };
     audio.onended = () => { if (token === speechGeneration) { anchor?.classList.remove('speaking'); activeAudio = null; } };
-    audio.onerror = () => { if (token === speechGeneration) { anchor?.classList.remove('speaking'); activeAudio = null; voiceStatus('网页英音没有加载成功，请刷新页面后再试。'); } };
+    audio.onerror = fallback;
     voiceStatus('');
-    audio.play().catch(() => { if (token === speechGeneration) { activeAudio = null; voiceStatus('网页英音没有加载成功，请检查网络后再试。'); } });
+    audio.play().catch(fallback);
   }
   async function speak() {
     if (!activeWord) return;
     const token = ++speechGeneration;
     const key = activeWord.en.toLowerCase().trim();
+    // Prefer the same bundled British-English clip on every device.
+    if (audioFiles[key]) { playAudioFile(audioFiles[key], token); return; }
     const currentVoice = speechVoice();
     if (currentVoice?.isBritish) { playWithVoice(currentVoice, token); return; }
-    if (audioFiles[key]) { playAudioFile(audioFiles[key], token); return; }
     if (!('speechSynthesis' in window)) { voiceStatus('这个词的英音音频还没有准备好，请联系我更新词表。'); return; }
     speechSynthesis.cancel();
     const selection = await waitForSpeechVoice();
@@ -179,7 +204,7 @@
     if (!selection) { voiceStatus('这个词没有网页英音，设备也没有英语语音；请联系我补充发音。'); return; }
     playWithVoice(selection, token);
   }
-  function playWithVoice(selection, token) {
+  function playWithVoice(selection, token, allowAudioFallback = true) {
     if (!activeWord) return;
     const entry = Object.hasOwn(phonics, activeWord.en.toLowerCase().trim()) ? phonics[activeWord.en.toLowerCase().trim()] : null;
     const u = new SpeechSynthesisUtterance(entry?.say || activeWord.en);
@@ -191,7 +216,7 @@
       if (token !== speechGeneration || ['canceled', 'interrupted'].includes(e.error)) return;
       anchor?.classList.remove('speaking'); activeUtterance = null;
       const key = activeWord?.en.toLowerCase().trim();
-      if (key && audioFiles[key]) playAudioFile(audioFiles[key], token);
+      if (key && audioFiles[key] && allowAudioFallback) playAudioFile(audioFiles[key], token);
       else voiceStatus('设备语音暂时没能播放，请检查语音设置和设备音量，再点一次单词。');
     };
     speechSynthesis.speak(u);
@@ -200,6 +225,69 @@
     clearActiveWord(); pending = null; importGeneration++;
     $('#import-preview').hidden = true; $('#import-error').hidden = true; $('#word-file').value = '';
     $('#import-dialog').showModal();
+  }
+  function drawPreview() {
+    const preview = $('#preview-list'); preview.replaceChildren();
+    let entryIndex = 0;
+    pending.forEach((week, weekIndex) => {
+      if (pending.length > 1) preview.append(el('p', 'preview-week-title', week.title));
+      week.rows.forEach((row, rowIndex) => {
+        const section = (week.sectionHeaders || []).find(item => item.beforeRow === rowIndex);
+        if (section) preview.append(el('p', 'preview-section-title', section.title));
+        row.forEach((word, columnIndex) => {
+          const entry = el('div', 'preview-row');
+          const english = el('input', 'preview-input'), chinese = el('input', 'preview-input preview-meaning');
+          english.value = word.en; english.maxLength = 150; english.setAttribute('aria-label', '英文单词');
+          chinese.value = word.zh; chinese.maxLength = 300; chinese.setAttribute('aria-label', '中文释义');
+          english.dataset.week = chinese.dataset.week = weekIndex;
+          english.dataset.row = chinese.dataset.row = rowIndex;
+          english.dataset.column = chinese.dataset.column = columnIndex;
+          english.dataset.field = 'en'; chinese.dataset.field = 'zh';
+          const remove = el('button', 'preview-remove', '删除'); remove.type = 'button';
+          remove.dataset.week = weekIndex; remove.dataset.row = rowIndex; remove.dataset.column = columnIndex;
+          remove.setAttribute('aria-label', `删除 ${word.en || '这条单词'}`);
+          entry.append(english, chinese, remove); preview.append(entry); entryIndex++;
+        });
+      });
+    });
+    $('#preview-count').textContent = `检查并修改识别结果；当前 ${entryIndex} 项。`;
+  }
+  function addPreviewWord() {
+    if (!pending?.length) return;
+    $('#import-error').hidden = true;
+    pending[0].rows.push([{ en: '', zh: '' }]);
+    drawPreview();
+    const fields = $('#preview-list').querySelectorAll('.preview-input');
+    const english = fields[fields.length - 2];
+    english?.focus();
+    $('#preview-list').scrollTop = $('#preview-list').scrollHeight;
+  }
+  function updatePreviewField(target) {
+    if (!pending || !target.matches('.preview-input')) return;
+    $('#import-error').hidden = true;
+    const word = pending[Number(target.dataset.week)]?.rows[Number(target.dataset.row)]?.[Number(target.dataset.column)];
+    if (word) word[target.dataset.field] = target.value.trimStart();
+    const total = pending.reduce((sum, week) => sum + week.rows.reduce((n, row) => n + row.length, 0), 0);
+    $('#preview-count').textContent = `检查并修改识别结果；当前 ${total} 项。`;
+  }
+  function removePreviewWord(button) {
+    const week = pending?.[Number(button.dataset.week)];
+    const row = week?.rows[Number(button.dataset.row)];
+    if (!row) return;
+    $('#import-error').hidden = true;
+    const total = week.rows.reduce((sum, current) => sum + current.length, 0);
+    if (total <= 1) { importError('每份词表至少保留一个单词。'); return; }
+    row.splice(Number(button.dataset.column), 1);
+    if (!row.length) {
+      const removedRow = Number(button.dataset.row); week.rows.splice(removedRow, 1);
+      const headers = week.sectionHeaders || [];
+      const currentSection = headers.find(section => section.beforeRow === removedRow);
+      const nextSection = headers.find(section => section.beforeRow > removedRow);
+      if (currentSection && nextSection?.beforeRow === removedRow + 1) headers.splice(headers.indexOf(currentSection), 1);
+      headers.forEach(section => { if (section.beforeRow > removedRow) section.beforeRow--; });
+      week.sectionHeaders = headers.filter(section => section.beforeRow < week.rows.length);
+    }
+    drawPreview();
   }
   function importError(message) { $('#import-error').textContent = message; $('#import-error').hidden = false; }
   async function onFile() {
@@ -232,9 +320,8 @@
       if (!candidates.length) throw Error('这些词表已经在花园里了，不用重复导入。');
       pending = candidates;
       $('#import-name').value = candidates[0].title; $('#import-name').disabled = candidates.length > 1;
-      const preview = $('#preview-list'); preview.replaceChildren();
-      candidates.flatMap(w => w.rows.flat()).slice(0, 10).forEach(w => { const row = el('div', 'preview-row'); row.append(el('span', '', w.en), el('span', '', w.zh)); preview.append(row); });
-      $('#preview-count').textContent = `将新增 ${candidates.length} 份词表，共 ${candidates.reduce((n, w) => n + count(w), 0)} 项，已有词表不会被覆盖。` + (warning ? ' ' + warning : '');
+      drawPreview();
+      $('#preview-count').textContent += ` 将新增 ${candidates.length} 份词表，已有词表不会被覆盖。` + (warning ? ' ' + warning : '');
       $('#import-preview').hidden = false;
     } catch (error) { if (generation === importGeneration) importError(error instanceof SyntaxError ? '备份文件不是有效的 JSON，请使用本站导出的词表备份。' : error.message); }
   }
@@ -243,6 +330,7 @@
     if (!storageReadable) { importError('无法安全读取已有本地词表，暂不写入。请先备份或换普通浏览模式。'); return; }
     const name = $('#import-name').value.trim();
     if (!name) { importError('先给这一周起个名字吧。'); return; }
+    if (pending.some(week => week.rows.some(row => row.some(word => !word.en.trim() || !word.zh.trim())))) { importError('每个单词都需要填写英文和中文；不需要的项目请点“删除”。'); return; }
     const additions = pending.map(w => ({ ...w, child, id: uid(), title: pending.length === 1 ? name : w.title }));
     const next = [...additions, ...local];
     try {
@@ -265,6 +353,10 @@
     $('[data-close="help-dialog"]').onclick = () => $('#help-dialog').close();
     $('#import-dialog').addEventListener('cancel', () => { importGeneration++; pending = null; });
     $('#backup').onclick = backup;
+    document.querySelectorAll('.study-mode[data-study-mode]').forEach(button => button.onclick = () => { studyMode = button.dataset.studyMode; updateStudyMode(); });
+    $('#preview-list').addEventListener('input', event => updatePreviewField(event.target));
+    $('#preview-list').addEventListener('click', event => { const button = event.target.closest('.preview-remove'); if (button) removePreviewWord(button); });
+    $('#preview-add').onclick = addPreviewWord;
     $('#child-select').onchange = e => { child = e.target.value; selected = ''; rebuild(); try { localStorage.setItem('maimai-garden-child-v1', child); } catch (_) {} };
     $('#week-select').onchange = e => { selected = e.target.value; render(); try { localStorage.setItem(SELECTION, selected); } catch (_) {} };
     document.addEventListener('keydown', e => { if (e.key === 'Escape') clearActiveWord(); });
